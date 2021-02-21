@@ -1,21 +1,36 @@
-# Makefile
+DIR_BIN = bin
+DIR_OBJ = obj
+DIR_SRC = src
+BIN = $(DIR_BIN)/main
+SRC = $(wildcard $(DIR_SRC)/*.c)
+OBJ = $(subst $(DIR_SRC),$(DIR_OBJ), $(SRC:.c=.o))
+DEP = $(OBJ:.o=.d)
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
-LDFLAGS =
-LDLIBS = 
+CPPFLAGS = -MMD
+CFLAGS = -Wall -Wextra -std=c99 
+LDLIBS = -lm -lSDL2 -lSDL2_ttf
 
-SRC = main.c
-OBJ = ${SRC:.c=.o}
+all: dirs $(BIN)
 
-all: main
+.PHONY: run
+run: all
+	@echo --- Running ---
+	./$(BIN)
 
-main: ${OBJ}
+$(BIN): $(OBJ)
+	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
+
+$(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $^
 
 .PHONY: clean
-
 clean:
-	${RM} ${OBJ}   # remove object files
-	${RM} main     # remove main program
+	rm -rf $(DIR_BIN) $(DIR_OBJ)
 
-# END
+# Make temporary directories
+.PHONY: dirs
+dirs:
+	mkdir -p $(DIR_BIN) $(DIR_OBJ)
+
+-include $(DEP)
