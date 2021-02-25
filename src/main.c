@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <err.h>
 #include <SDL2/SDL.h>
+#include "matrix.h"
+#include "tools.h"
 
 void cleanResources(SDL_Window *window, SDL_Renderer *renderer,
  SDL_Texture *texture) {
@@ -14,6 +16,7 @@ void cleanResources(SDL_Window *window, SDL_Renderer *renderer,
 }
 
 int main () {
+	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		SDL_Log("Erreur > %s\n", SDL_GetError());
 		cleanResources(NULL, NULL, NULL);
@@ -45,7 +48,7 @@ int main () {
 
 	//Icons
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_Rect rect_select = {500, 100, 250, 150};
+	SDL_Rect rect_select = {500, 100, 50, 50};
 	SDL_RenderFillRect(renderer, &rect_select);
 	SDL_RenderPresent(renderer);
 
@@ -56,6 +59,12 @@ int main () {
 		cleanResources(window, renderer, NULL);
 		return -1;
 	}
+
+	//Only for debug
+	/*matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
+	unsigned char valu = matrix_get(mat_pack->r, 100, 100);
+	printf("%u\n", valu);*/
+
 	size_t image_width = image_surface->w;
 	size_t image_height = image_surface->h;
 
@@ -73,8 +82,34 @@ int main () {
 	SDL_QueryTexture(image_texture, NULL, NULL, &rect.w, &rect.h);
 	SDL_RenderCopy(renderer, image_texture, NULL, &rect);
 	SDL_RenderPresent(renderer);
-	SDL_Delay(5000);
+
+	//Detection of mouse click in rect_select
+	short opened = 1;
+	SDL_Event events;
+	int mouse_x = 0;
+	int mouse_y = 0;
+	while (opened) {
+		while(SDL_PollEvent(&events)) {
+			switch (events.type) {
+				case SDL_QUIT:
+					opened--;
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+					SDL_GetGlobalMouseState(&mouse_x, 
+					&mouse_y);
+					printf("%i and %i\n", mouse_x, 
+					mouse_y);
+					//Change detection collision
+					/*SDL_Point mouse_pos = {mouse_x, 
+					mouse_y};
+					if (SDL_PointInRect(&mouse_pos, 
+						&rect_select)) {
+						printf("PIXEL MODE\n");
+					}*/
+					break;
+			}
+		}
+	}
 	cleanResources(window, renderer, image_texture);
-	SDL_Quit();
 	return 0;	
 }
