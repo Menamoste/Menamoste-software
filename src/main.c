@@ -63,7 +63,8 @@ int main () {
 	//Only for debug
 	/*matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
 	unsigned char valu = matrix_get(mat_pack->r, 100, 100);
-	printf("%u\n", valu);*/
+	printf("%u\n", valu);
+	mat_pack_free(mat_pack);*/
 
 	size_t image_width = image_surface->w;
 	size_t image_height = image_surface->h;

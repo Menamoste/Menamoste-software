@@ -44,8 +44,8 @@ matrix_pack *mat_pack_zero(size_t rows, size_t cols) {
 }
 
 void mat_pack_free(matrix_pack *mat_pack) {
-	free(mat_pack->r);
-	free(mat_pack->g);
-	free(mat_pack->b);
+	matrix_free(mat_pack->r);
+	matrix_free(mat_pack->g);
+	matrix_free(mat_pack->b);
 	free(mat_pack);
 }
