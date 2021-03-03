@@ -26,7 +26,7 @@ int main () {
 	size_t window_height = 1080;
 
 	SDL_Window *window = SDL_CreateWindow("Affichage", 
-	SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width,
+	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
 	window_height, 0);
 	if (!window) {
 		SDL_Log("Erreur : %s\n", SDL_GetError());
@@ -48,7 +48,7 @@ int main () {
 
 	//Icons
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_Rect rect_select = {500, 100, 50, 50};
+	SDL_Rect rect_select = {100, 100, 20, 20};
 	SDL_RenderFillRect(renderer, &rect_select);
 	SDL_RenderPresent(renderer);
 
@@ -59,12 +59,6 @@ int main () {
 		cleanResources(window, renderer, NULL);
 		return -1;
 	}
-
-	//Only for debug
-	/*matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
-	unsigned char valu = matrix_get(mat_pack->r, 100, 100);
-	printf("%u\n", valu);
-	mat_pack_free(mat_pack);*/
 
 	size_t image_width = image_surface->w;
 	size_t image_height = image_surface->h;
@@ -78,7 +72,7 @@ int main () {
 	}
 
 	SDL_FreeSurface(image_surface);
-	SDL_Rect rect = {window_width / 2, window_height / 2, image_width,
+	SDL_Rect rect = {window_width / 3, window_height / 4, image_width,
 	image_height};
 	SDL_QueryTexture(image_texture, NULL, NULL, &rect.w, &rect.h);
 	SDL_RenderCopy(renderer, image_texture, NULL, &rect);
@@ -89,6 +83,10 @@ int main () {
 	SDL_Event events;
 	int mouse_x = 0;
 	int mouse_y = 0;
+        //The display of the rectangle is just a bit above about his
+        //real position. So the position needs to be fixed.
+        rect_select.y -= 20;
+        //Event Management
 	while (opened) {
 		while(SDL_PollEvent(&events)) {
 			switch (events.type) {
@@ -101,12 +99,12 @@ int main () {
 					printf("%i and %i\n", mouse_x, 
 					mouse_y);
 					//Change detection collision
-					/*SDL_Point mouse_pos = {mouse_x, 
+					SDL_Point mouse_pos = {mouse_x, 
 					mouse_y};
 					if (SDL_PointInRect(&mouse_pos, 
 						&rect_select)) {
 						printf("PIXEL MODE\n");
-					}*/
+					}
 					break;
 			}
 		}
