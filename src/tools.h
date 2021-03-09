@@ -12,4 +12,7 @@ Uint32 get_pixel(SDL_Surface *sur, int x, int y);
 
 //Return a matrix_pack of the RGB pixels of the surface.
 matrix_pack *sur_to_mat_pack(SDL_Surface *sur);
+
+//Changes directly the surface *sur with the matrix_pack *mat_pack.i
+void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack);
 #endif

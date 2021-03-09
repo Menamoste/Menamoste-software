@@ -89,3 +89,21 @@ matrix_pack *sur_to_mat_pack(SDL_Surface *sur) {
 	return mat_pack;
 }
 
+void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack) {
+	size_t width  = sur->w;
+	size_t height = sur->h;
+	Uint8 r_val   = 0;
+	Uint8 g_val   = 0;
+	Uint8 b_val   = 0;
+	Uint32 pixel  = 0;
+
+	for (size_t i = 0; i < width; i++) {
+		for (size_t j = 0; j < height; j++) {
+			r_val = matrix_get(mat_pack->r, j, i);
+			g_val = matrix_get(mat_pack->g, j, i);
+			b_val = matrix_get(mat_pack->b, j, i);
+			pixel = SDL_MapRGB(sur->format, r_val, g_val, b_val);
+			set_pixel(sur, i, j, pixel);
+		}
+	}
+} 
