@@ -8,7 +8,7 @@ DEP = $(OBJ:.o=.d)
 
 CC = gcc
 CPPFLAGS = -MMD
-CFLAGS = -Wall -Wextra -std=c99 
+CFLAGS = -g -Wall -Wextra -std=c99 
 LDLIBS = -lm -lSDL2 -lSDL2_ttf
 
 all: dirs $(BIN)

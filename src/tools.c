@@ -1,6 +1,4 @@
 #include "tools.h"
-//TO REMOVE LATER
-#include <stdlib.h>
 
 void set_pixel(SDL_Surface *sur, int x, int y, Uint32 pixel)
 {
@@ -79,13 +77,11 @@ matrix_pack *sur_to_mat_pack(SDL_Surface *sur) {
 			Uint8 r, g, b;
 			Uint32 pixel = get_pixel(sur, i, j);
 			SDL_GetRGB(pixel, sur->format, &r, &g, &b);
-
 			matrix_set(mat_pack->r, j, i, r);
 			matrix_set(mat_pack->g, j, i, g);
 			matrix_set(mat_pack->b, j, i, b);
 		}
 	}
-
 	return mat_pack;
 }
 
@@ -106,4 +102,38 @@ void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack) {
 			set_pixel(sur, i, j, pixel);
 		}
 	}
-} 
+}
+
+matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle) {
+	//Data
+	double teta = (2 * 3.141559 * angle) / 360.0;
+	double costeta = cos(-teta);
+	double sinteta = sin(-teta);
+	//Take the rows and cols from the mat_pack.
+	int rows = (int)mat_pack->r->rows;
+	int cols = (int)mat_pack->r->cols;
+	//Coordinates of where it rotates.
+	int x0 = cols / 2;
+	int y0 = rows / 2;
+	//Offsets of the coordinates.
+	int xoff;
+	int yoff;
+	//Coordinates of the new points.
+	int x2;
+	int y2;
+	matrix_pack *result = mat_pack_zero(rows, cols);
+	mat_pack_add(result, 255);
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows; y++) {
+			xoff = x - x0;
+			yoff = y - y0;
+			x2 = (int)(xoff * costeta - yoff * sinteta + x0);
+			y2 = (int)(xoff * sinteta + yoff * costeta + y0);
+			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
+				triplet trip = mat_pack_get(mat_pack, y, x);
+				mat_pack_set(result, y2, x2, trip);
+			}
+		}
+	}
+	return result;
+}

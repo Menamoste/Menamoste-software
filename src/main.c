@@ -4,6 +4,9 @@
 #include "matrix.h"
 #include "tools.h"
 
+const size_t window_width = 1920;
+const size_t window_height = 1080;
+
 void cleanResources(SDL_Window *window, SDL_Renderer *renderer,
  SDL_Texture *texture) {
 	if (texture  != NULL)
@@ -22,8 +25,6 @@ int main () {
 		cleanResources(NULL, NULL, NULL);
 		return -1;
 	}
-	size_t window_width = 1920;
-	size_t window_height = 1080;
 
 	SDL_Window *window = SDL_CreateWindow("Affichage", 
 	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
@@ -59,7 +60,7 @@ int main () {
 		cleanResources(window, renderer, NULL);
 		return -1;
 	}
-
+	
 	size_t image_width = image_surface->w;
 	size_t image_height = image_surface->h;
 
@@ -79,7 +80,7 @@ int main () {
 	SDL_RenderPresent(renderer);
 
 	//Detection of mouse click in rect_select
-	short opened = 1;
+	char opened = 1;
 	SDL_Event events;
 	int mouse_x = 0;
 	int mouse_y = 0;
@@ -110,5 +111,6 @@ int main () {
 		}
 	}
 	cleanResources(window, renderer, image_texture);
+	printf("Finished.\n");
 	return 0;	
 }
