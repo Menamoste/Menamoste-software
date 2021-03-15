@@ -9,13 +9,13 @@ matrix *matrix_new(size_t rows, size_t cols) {
     matrix *mat = malloc(sizeof(matrix));
     mat->rows = rows;
     mat->cols = cols;
-    mat->data = malloc(sizeof(unsigned char) * rows * cols);
+    mat->data = malloc(sizeof(float) * rows * cols);
     return mat;
 }
 
 matrix *matrix_zero(size_t rows, size_t cols) {
     matrix *mat = matrix_new(rows, cols);
-    memset(mat->data, 0, rows * cols * sizeof(unsigned char));
+    memset(mat->data, 0, rows * cols * sizeof(float));
     return mat;
 }
 
@@ -24,23 +24,49 @@ void matrix_free(matrix *mat) {
 	free(mat);
 }
 
-unsigned char matrix_get(const matrix *mat, size_t i, size_t j) {
+float matrix_get(const matrix *mat, size_t i, size_t j) {
 	if (i > mat->rows || j > mat->cols)
-		err(1, "Coordinates out of bounds.");
+		err(EXIT_FAILURE, "Coordinates out of bounds.");
 	return MAT_GET(mat, i, j);
 }
 
-void matrix_set(matrix *mat, size_t i, size_t j, unsigned char val) {
+void matrix_set(matrix *mat, size_t i, size_t j, float val) {
 	if (i > mat->rows || j > mat->cols)
-		err(1, "Coordinates out of bounds.");
+		err(EXIT_FAILURE, "Coordinates out of bounds.");
 	MAT_GET(mat, i, j) = val;
 }
 
-void matrix_add(matrix *mat, unsigned char val) {
+void matrix_add(matrix *mat, float val) {
 	for (size_t i = 0; i < mat->rows; ++i) {
 		for (size_t j = 0; j < mat->cols; ++j) {
 			MAT_GET(mat, i, j) = val;
 		}
+	}
+}
+
+void matrix_multiply(matrix *mat1, matrix *mat2) {
+	size_t rows1 = mat1->rows;
+	size_t rows2 = mat2->rows;
+	size_t cols1 = mat1->cols;
+	size_t cols2 = mat2->cols;
+
+	if (rows1 != rows2 || cols1 != cols2)
+		err(EXIT_FAILURE, "Could not multiply.");
+	for (size_t i = 0; i < rows1; ++i) {
+		for (size_t j = 0; j < cols2; ++j) {
+			MAT_GET(mat1, i, j) *= MAT_GET(mat2, i, j);
+		}
+	}
+}
+
+void print_matrix(matrix *mat) {
+	size_t rows = mat->rows;
+	size_t cols = mat->cols;
+	for (size_t i = 0; i < rows; ++i) {
+		for (size_t j = 0; j < cols; ++j) {
+			printf("%f ", matrix_get(mat, i, j));
+		}
+		printf("\n");
 	}
 }
 
@@ -61,9 +87,9 @@ void mat_pack_free(matrix_pack *mat_pack) {
 }
 
 triplet mat_pack_get(matrix_pack *mat_pack, size_t i, size_t j) {
-	unsigned char r = matrix_get(mat_pack->r, i, j);
-	unsigned char g = matrix_get(mat_pack->g, i, j);
-	unsigned char b = matrix_get(mat_pack->b, i, j);
+	float r = matrix_get(mat_pack->r, i, j);
+	float g = matrix_get(mat_pack->g, i, j);
+	float b = matrix_get(mat_pack->b, i, j);
 	triplet trip = {r, g, b};
 	return trip;
 }
@@ -74,7 +100,7 @@ void mat_pack_set(matrix_pack *mat_pack, size_t i, size_t j, triplet trip) {
 	matrix_set(mat_pack->b, i, j, trip.b);
 }
 
-void mat_pack_add(matrix_pack *mat_pack, unsigned char val) {
+void mat_pack_add(matrix_pack *mat_pack, float val) {
 	matrix_add(mat_pack->r, val);
 	matrix_add(mat_pack->g, val);
 	matrix_add(mat_pack->b, val);

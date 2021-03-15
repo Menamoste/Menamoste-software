@@ -77,9 +77,12 @@ matrix_pack *sur_to_mat_pack(SDL_Surface *sur) {
 			Uint8 r, g, b;
 			Uint32 pixel = get_pixel(sur, i, j);
 			SDL_GetRGB(pixel, sur->format, &r, &g, &b);
-			matrix_set(mat_pack->r, j, i, r);
-			matrix_set(mat_pack->g, j, i, g);
-			matrix_set(mat_pack->b, j, i, b);
+			float new_r = r / 255.f;
+			float new_g = g / 255.f;
+			float new_b = b / 255.f;
+
+			triplet trip = {new_r, new_g, new_b};
+			mat_pack_set(mat_pack, j, i, trip);
 		}
 	}
 	return mat_pack;
@@ -88,17 +91,15 @@ matrix_pack *sur_to_mat_pack(SDL_Surface *sur) {
 void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack) {
 	size_t width  = sur->w;
 	size_t height = sur->h;
-	Uint8 r_val   = 0;
-	Uint8 g_val   = 0;
-	Uint8 b_val   = 0;
 	Uint32 pixel  = 0;
 
 	for (size_t i = 0; i < width; i++) {
 		for (size_t j = 0; j < height; j++) {
-			r_val = matrix_get(mat_pack->r, j, i);
-			g_val = matrix_get(mat_pack->g, j, i);
-			b_val = matrix_get(mat_pack->b, j, i);
-			pixel = SDL_MapRGB(sur->format, r_val, g_val, b_val);
+			triplet trip = mat_pack_get(mat_pack, j, i);
+			unsigned char new_r = trip.r * 255;
+			unsigned char new_g = trip.g * 255;
+			unsigned char new_b = trip.b * 255;
+			pixel = SDL_MapRGB(sur->format, new_r, new_g, new_b);
 			set_pixel(sur, i, j, pixel);
 		}
 	}
@@ -116,17 +117,16 @@ matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle) {
 	int x0 = cols / 2;
 	int y0 = rows / 2;
 	//Offsets of the coordinates.
-	int xoff;
-	int yoff;
+	int xoff = 0;
+	int yoff = 0;
 	//Coordinates of the new points.
-	int x2;
-	int y2;
+	int x2 = 0;
+	int y2 = 0;
+	//The new matrix.
 	matrix_pack *result = mat_pack_zero(rows, cols);
 	mat_pack_add(result, 255);
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			xoff = x - x0;
-			yoff = y - y0;
 			x2 = (int)(xoff * costeta - yoff * sinteta + x0);
 			y2 = (int)(xoff * sinteta + yoff * costeta + y0);
 			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
@@ -137,3 +137,37 @@ matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle) {
 	}
 	return result;
 }
+
+//A revoir car matrices of unsigned.
+/*matrix_pack *three_shears(matrix_pack *mat_pack, unsigned char angle) {
+	
+	//Data
+	double teta = (2 * 3.141559 * angle) / 360.0;
+	double tan_teta_over_2 = tan(teta) / 2;
+	double sin_teta = sin(-teta);
+	//Take the rows and cols from the mat_pack.
+	int rows = (int)mat_pack->r->rows;
+	int cols = (int)mat_pack->r->cols;
+	//Matrices for calculation.
+	matrix *mat1 = matrix_zero(2, 2);
+	matrix *mat2 = matrix_zero(2, 2);
+	//Put the correct values on the matrices.
+	matrix_get(mat1, 0, 0, 1);
+	matrix_get(mat1, 1, 0, 1);
+	matrix_get(mat1, 0, 1, 1);
+	matrix_get(mat1, 1, 1, 1);
+
+	
+	//The new matrix.
+	matrix_pack *result = mat_pack_zero(rows, cols);
+	mat_pack_add(result, 255);
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows; y++) {
+			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
+				triplet trip = mat_pack_get(mat_pack, y, x);
+				mat_pack_set(result, y2, x2, trip);
+			}
+		}
+	}
+	return result;
+}*/

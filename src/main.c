@@ -57,12 +57,14 @@ int main () {
 	SDL_Surface *image_surface = SDL_LoadBMP("../res/Lenna.bmp");
 	if (!image_surface) {
 		SDL_Log("Erreur : %s\n", SDL_GetError());
-		cleanResources(window, renderer, NULL);
+		//cleanResources(window, renderer, NULL);
 		return -1;
 	}
 	
-	size_t image_width = image_surface->w;
-	size_t image_height = image_surface->h;
+	//Test Matrices
+	//matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
+	//mat_pack_to_sur(image_surface, mat_pack);
+	//Fin test matrices
 
 	SDL_Texture *image_texture = SDL_CreateTextureFromSurface(renderer,
 	image_surface);
@@ -71,6 +73,9 @@ int main () {
 		cleanResources(window, renderer, NULL);
 		return -1;
 	}
+
+	size_t image_width = image_surface->w;
+	size_t image_height = image_surface->h;
 
 	SDL_FreeSurface(image_surface);
 	SDL_Rect rect = {window_width / 3, window_height / 4, image_width,
@@ -111,6 +116,5 @@ int main () {
 		}
 	}
 	cleanResources(window, renderer, image_texture);
-	printf("Finished.\n");
 	return 0;	
 }

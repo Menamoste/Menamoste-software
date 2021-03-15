@@ -8,9 +8,9 @@
 
 //Struct for matrices.
 typedef struct {
-	size_t         rows;
-	size_t         cols;
-	unsigned char *data;
+	size_t rows;
+	size_t cols;
+	float *data;
 } matrix;
 
 //Never forget to free !
@@ -23,9 +23,9 @@ typedef struct {
 } matrix_pack;
 
 typedef struct {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
+	float r;
+	float g;
+	float b;
 } triplet;
 
 //Create a new matrix with random values. Generally, to forbid.
@@ -38,13 +38,19 @@ matrix *matrix_zero(size_t rows, size_t cols);
 void matrix_free(matrix *mat);
 
 //Get the value in i and j on the matrix mat.
-unsigned char matrix_get(const matrix *mat, size_t i, size_t j);
+float matrix_get(const matrix *mat, size_t i, size_t j);
 
 //Set the value in i and j on the matrix mat.
-void matrix_set(matrix *mat, size_t i, size_t j, unsigned char val);
+void matrix_set(matrix *mat, size_t i, size_t j, float val);
 
 //Add the value val on the matrix mat.
-void matrix_add(matrix *mat, unsigned char val);
+void matrix_add(matrix *mat, float val);
+
+//Multiply two matrices mat1 and mat2, store the result in mat1.
+void matrix_multiply(matrix *mat1, matrix *mat2);
+
+//Print a matrix.
+void print_matrix(matrix *mat);
 
 //Create a new matrix_pack filled with zeros.
 matrix_pack *mat_pack_zero(size_t rows, size_t cols);
@@ -59,5 +65,5 @@ triplet mat_pack_get(matrix_pack *mat_pack, size_t i, size_t j);
 void mat_pack_set(matrix_pack *mat_pack, size_t i, size_t j, triplet trip);
 
 //Add the value val on the matrix_pack mat_pack.
-void mat_pack_add(matrix_pack *mat_pack, unsigned char val); 
+void mat_pack_add(matrix_pack *mat_pack, float val); 
 #endif
