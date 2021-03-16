@@ -44,19 +44,24 @@ void matrix_add(matrix *mat, float val) {
 	}
 }
 
-void matrix_multiply(matrix *mat1, matrix *mat2) {
-	size_t rows1 = mat1->rows;
-	size_t rows2 = mat2->rows;
-	size_t cols1 = mat1->cols;
-	size_t cols2 = mat2->cols;
+matrix *matrix_multiply(matrix *mat1, matrix *mat2) {
+	size_t rows = mat2->rows;
+	size_t cols = mat1->cols;
 
-	if (rows1 != rows2 || cols1 != cols2)
+	if (rows != cols)
 		err(EXIT_FAILURE, "Could not multiply.");
-	for (size_t i = 0; i < rows1; ++i) {
-		for (size_t j = 0; j < cols2; ++j) {
-			MAT_GET(mat1, i, j) *= MAT_GET(mat2, i, j);
-		}
+		
+ 	matrix *result = matrix_new(rows, cols);
+
+        for (size_t i = 0; i < rows; ++i) {
+        	for (size_t j = 0; j < cols; ++j) {
+            		float sum = 0.f;
+            		for (size_t k = 0; k < cols; ++k)
+                		sum += MAT_GET(mat1, i, k) * MAT_GET(mat2, k, j);
+            		MAT_GET(result, i, j) = sum;
+        	}
 	}
+    return result;
 }
 
 void print_matrix(matrix *mat) {

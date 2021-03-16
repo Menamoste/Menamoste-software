@@ -105,69 +105,102 @@ void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack) {
 	}
 }
 
+
+//Turns the image on a teta angle
 matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle) {
-	//Data
 	double teta = (2 * 3.141559 * angle) / 360.0;
 	double costeta = cos(-teta);
 	double sinteta = sin(-teta);
-	//Take the rows and cols from the mat_pack.
 	int rows = (int)mat_pack->r->rows;
 	int cols = (int)mat_pack->r->cols;
-	//Coordinates of where it rotates.
 	int x0 = cols / 2;
 	int y0 = rows / 2;
-	//Offsets of the coordinates.
-	int xoff = 0;
-	int yoff = 0;
-	//Coordinates of the new points.
-	int x2 = 0;
-	int y2 = 0;
-	//The new matrix.
+
 	matrix_pack *result = mat_pack_zero(rows, cols);
-	mat_pack_add(result, 255);
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			x2 = (int)(xoff * costeta - yoff * sinteta + x0);
-			y2 = (int)(xoff * sinteta + yoff * costeta + y0);
+			int xoff = x - x0;
+			int yoff = y - y0;
+			int x2 = (int)(xoff * costeta -yoff * sinteta + x0);
+			int y2 = (int)(xoff * sinteta +yoff * costeta + y0);
 			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
-				triplet trip = mat_pack_get(mat_pack, y, x);
-				mat_pack_set(result, y2, x2, trip);
+				triplet trip = mat_pack_get(mat_pack, x, y);
+				mat_pack_set(result, x2, y2, trip);
 			}
 		}
 	}
 	return result;
 }
 
-//A revoir car matrices of unsigned.
-/*matrix_pack *three_shears(matrix_pack *mat_pack, unsigned char angle) {
-	
-	//Data
-	double teta = (2 * 3.141559 * angle) / 360.0;
-	double tan_teta_over_2 = tan(teta) / 2;
-	double sin_teta = sin(-teta);
-	//Take the rows and cols from the mat_pack.
-	int rows = (int)mat_pack->r->rows;
-	int cols = (int)mat_pack->r->cols;
-	//Matrices for calculation.
-	matrix *mat1 = matrix_zero(2, 2);
-	matrix *mat2 = matrix_zero(2, 2);
-	//Put the correct values on the matrices.
-	matrix_get(mat1, 0, 0, 1);
-	matrix_get(mat1, 1, 0, 1);
-	matrix_get(mat1, 0, 1, 1);
-	matrix_get(mat1, 1, 1, 1);
-
-	
-	//The new matrix.
-	matrix_pack *result = mat_pack_zero(rows, cols);
-	mat_pack_add(result, 255);
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows; y++) {
-			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
-				triplet trip = mat_pack_get(mat_pack, y, x);
-				mat_pack_set(result, y2, x2, trip);
+//Keeps the value between 0.0 and 1.0.
+float prevent_overflow(float value) {
+	if (value > 1.0)
+		return 1.0;
+	if (value < 0.0)
+		return 0.0;
+	return value;
+}
+//Return the convolution matrix of matrix with convo
+matrix *mat_convolution(matrix *mat, matrix *convo) {
+	size_t rows1 = mat->rows;
+	size_t rows2 = convo->rows;
+	size_t cols1 = mat->cols;
+	size_t cols2 = convo->cols;
+	matrix *result = matrix_zero(rows1, cols1);
+	//Indexes for matrix : i and j, for convo : k and l.
+	for (size_t i = 0; i < rows1; i++) {
+		for (size_t j = 0; j < cols1; j++) {
+			float accu = 0;
+			for (size_t k = 0; k < rows2; k++) {
+				for (size_t l = 0; l < cols2; l++) {
+					size_t x = i + k - (rows2 / 2);
+					size_t y = j + l - (cols2 / 2);
+					if (x < rows1 && y < cols1 
+					 && x > 0 && y > 0) {
+						float mat_val = 
+						       matrix_get(mat, x,y);
+						float conv_val = 
+						       matrix_get(convo, k, l);	
+						accu += mat_val * conv_val;
+					}
+				}
 			}
+			accu = prevent_overflow(accu);
+			matrix_set(result, i, j, accu);
 		}
 	}
+	//Edge Handeling
+	float mat_val = 0.0f; 
+
+	for (size_t i = 0; i < rows1; i++) {
+		mat_val = matrix_get(result, i, 2);
+		matrix_set(result, i, 0, mat_val);
+		matrix_set(result, i, 1, mat_val);
+		matrix_set(result, i, 2, mat_val);
+
+		mat_val = matrix_get(result, i, cols1 - 2);
+		matrix_set(result, i, cols1 - 1, mat_val);
+		matrix_set(result, i, cols1 - 2, mat_val);
+		matrix_set(result, i, cols1 - 3, mat_val);
+	}
+	for (size_t j = 0; j < cols1; j++) {
+		mat_val = matrix_get(result, 2, j);
+		matrix_set(result, 0, j, mat_val);
+		matrix_set(result, 1, j, mat_val);
+		matrix_set(result, 2, j, mat_val);
+
+		mat_val = matrix_get(result, rows1 - 2, j);
+		matrix_set(result, rows1 - 1, j, mat_val);
+		matrix_set(result, rows1 - 2, j, mat_val);
+		matrix_set(result, rows1 - 3, j, mat_val);
+	}
+
 	return result;
-}*/
+}
+
+//Same as ma_convolution but for mat_packs.
+void convolution(matrix_pack *mat_pack, matrix *convo) {
+	mat_pack->r = mat_convolution(mat_pack->r, convo);
+	mat_pack->g = mat_convolution(mat_pack->g, convo);
+	mat_pack->b = mat_convolution(mat_pack->b, convo);
+}

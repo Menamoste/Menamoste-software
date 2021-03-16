@@ -7,7 +7,7 @@
 #define MAT_GET(mat, i, j) (mat->data[i * mat->cols + j])
 
 //Struct for matrices.
-typedef struct {
+typedef struct matrix {
 	size_t rows;
 	size_t cols;
 	float *data;
@@ -16,13 +16,13 @@ typedef struct {
 //Never forget to free !
 //Struct for package of three matrices, used for picture RGB.
 
-typedef struct {
+typedef struct matrix_pack {
 	matrix *r;
 	matrix *g;
 	matrix *b;
 } matrix_pack;
 
-typedef struct {
+typedef struct triplet {
 	float r;
 	float g;
 	float b;
@@ -47,7 +47,7 @@ void matrix_set(matrix *mat, size_t i, size_t j, float val);
 void matrix_add(matrix *mat, float val);
 
 //Multiply two matrices mat1 and mat2, store the result in mat1.
-void matrix_multiply(matrix *mat1, matrix *mat2);
+matrix *matrix_multiply(matrix *mat1, matrix *mat2);
 
 //Print a matrix.
 void print_matrix(matrix *mat);

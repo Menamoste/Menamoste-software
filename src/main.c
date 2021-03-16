@@ -19,6 +19,33 @@ void cleanResources(SDL_Window *window, SDL_Renderer *renderer,
 }
 
 int main () {
+
+	//Data
+
+    	//Box Blur Matrix
+    	matrix *convo = matrix_zero(3, 3);
+   	matrix_set(convo, 0, 0, 0.1111111);
+   	matrix_set(convo, 0, 1, 0.1111111);
+    	matrix_set(convo, 0, 2, 0.1111111);
+    	matrix_set(convo, 1, 0, 0.1111111);
+    	matrix_set(convo, 1, 1, 0.1111111);
+    	matrix_set(convo, 1, 2, 0.1111111);
+    	matrix_set(convo, 2, 0, 0.1111111);
+    	matrix_set(convo, 2, 1, 0.1111111);
+    	matrix_set(convo, 2, 2, 0.1111111);
+
+   	//Contrast Matrix
+    	/*matrix *convo2 = matrix_zero(3, 3);
+    	matrix_set(convo2, 0, 0, 0);
+    	matrix_set(convo2, 0, 1, -1);
+    	matrix_set(convo2, 0, 2, 0);
+    	matrix_set(convo2, 1, 0, -1);
+    	matrix_set(convo2, 1, 1, 5);
+    	matrix_set(convo2, 1, 2, -1);
+    	matrix_set(convo2, 2, 0, 0);
+    	matrix_set(convo2, 2, 1, -1);
+    	matrix_set(convo2, 2, 2, 0);*/
+
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		SDL_Log("Erreur > %s\n", SDL_GetError());
@@ -57,14 +84,9 @@ int main () {
 	SDL_Surface *image_surface = SDL_LoadBMP("../res/Lenna.bmp");
 	if (!image_surface) {
 		SDL_Log("Erreur : %s\n", SDL_GetError());
-		//cleanResources(window, renderer, NULL);
+		cleanResources(window, renderer, NULL);
 		return -1;
 	}
-	
-	//Test Matrices
-	//matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
-	//mat_pack_to_sur(image_surface, mat_pack);
-	//Fin test matrices
 
 	SDL_Texture *image_texture = SDL_CreateTextureFromSurface(renderer,
 	image_surface);

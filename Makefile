@@ -22,7 +22,7 @@ $(BIN): $(OBJ)
 	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 $(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $^
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:

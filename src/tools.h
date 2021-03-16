@@ -18,4 +18,13 @@ void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack);
 
 //Rotate the matrix by the angle and returns a new matrix_pack.
 matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle);
+
+//Keeps the value between 0.0 and 1.0.
+float prevent_overflow(float value); 
+
+//Return the convolution matrix of matrix with convo.
+matrix *mat_convolution(matrix *mat, matrix *convo);
+
+//Same as mat_convolution but for mat_packs.
+void convolution(matrix_pack *mat_pack, matrix *convo);
 #endif
