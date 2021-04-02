@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <err.h>
 #include <SDL2/SDL.h>
+#include "gui.h"
 #include "matrix.h"
 #include "tools.h"
 
@@ -23,7 +24,7 @@ int main () {
 	//Data
 
     	//Box Blur Matrix
-    	matrix *convo = matrix_zero(3, 3);
+    	/*matrix *convo = matrix_zero(3, 3);
    	matrix_set(convo, 0, 0, 0.1111111);
    	matrix_set(convo, 0, 1, 0.1111111);
     	matrix_set(convo, 0, 2, 0.1111111);
@@ -32,7 +33,7 @@ int main () {
     	matrix_set(convo, 1, 2, 0.1111111);
     	matrix_set(convo, 2, 0, 0.1111111);
     	matrix_set(convo, 2, 1, 0.1111111);
-    	matrix_set(convo, 2, 2, 0.1111111);
+    	matrix_set(convo, 2, 2, 0.1111111);*/
 
    	//Contrast Matrix
     	/*matrix *convo2 = matrix_zero(3, 3);
@@ -46,6 +47,18 @@ int main () {
     	matrix_set(convo2, 2, 1, -1);
     	matrix_set(convo2, 2, 2, 0);*/
 
+	//Colors for icons
+	SDL_Color colors[9];
+	set_color(colors, 0, 255, 0  , 0  , 255);
+	set_color(colors, 1, 0  , 255, 0  , 255);
+	set_color(colors, 2, 0  , 0  , 255, 255);
+	set_color(colors, 3, 255, 0  , 255, 255);
+	set_color(colors, 4,   0, 255, 255, 255);
+	set_color(colors, 5, 255, 255, 0  , 255);
+	set_color(colors, 6, 255, 255, 255, 255);
+	set_color(colors, 7, 0  , 0  , 255, 255);
+	set_color(colors, 8, 127, 127, 255, 255);
+
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		SDL_Log("Erreur > %s\n", SDL_GetError());
@@ -53,7 +66,7 @@ int main () {
 		return -1;
 	}
 
-	SDL_Window *window = SDL_CreateWindow("Affichage", 
+	SDL_Window *window = SDL_CreateWindow("Menamoste Image Editor", 
 	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
 	window_height, 0);
 	if (!window) {
@@ -75,13 +88,24 @@ int main () {
 	SDL_RenderPresent(renderer);
 
 	//Icons
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_Rect rect_select = {100, 100, 20, 20};
-	SDL_RenderFillRect(renderer, &rect_select);
-	SDL_RenderPresent(renderer);
+ 	SDL_Rect rects[9]; 
+    	size_t x = 1100;
+    	for(size_t i  = 0; i < 9; i++)
+    	{
+		set_rect(&rects[i], x, 100, 50, 50);
+		draw_rect(renderer, rects[i], colors[i]);
+        	x += 100;
+    	}
+    	size_t y = 300;
+    	for(size_t i = 0; i < 4; i++)
+    	{
+		set_rect(&rects[i], y, 100, 50, 50);
+		draw_rect(renderer, rects[i], colors[i]);
+        	y += 50;     
+    	}
 
 	//Image
-	SDL_Surface *image_surface = SDL_LoadBMP("../res/Lenna.bmp");
+	SDL_Surface *image_surface = SDL_LoadBMP("../res/Images/Lenna.bmp");
 	if (!image_surface) {
 		SDL_Log("Erreur : %s\n", SDL_GetError());
 		cleanResources(window, renderer, NULL);
@@ -100,10 +124,12 @@ int main () {
 	size_t image_height = image_surface->h;
 
 	SDL_FreeSurface(image_surface);
-	SDL_Rect rect = {window_width / 3, window_height / 4, image_width,
+	
+	//Set image on renderer with a rectangle.
+	SDL_Rect image_rect = {window_width / 3, window_height / 4, image_width,
 	image_height};
-	SDL_QueryTexture(image_texture, NULL, NULL, &rect.w, &rect.h);
-	SDL_RenderCopy(renderer, image_texture, NULL, &rect);
+	SDL_QueryTexture(image_texture, NULL, NULL, &image_rect.w, &image_rect.h);
+	SDL_RenderCopy(renderer, image_texture, NULL, &image_rect);
 	SDL_RenderPresent(renderer);
 
 	//Detection of mouse click in rect_select
@@ -111,9 +137,11 @@ int main () {
 	SDL_Event events;
 	int mouse_x = 0;
 	int mouse_y = 0;
+
+	//TODO: Fixed icons positions.
         //The display of the rectangle is just a bit above about his
         //real position. So the position needs to be fixed.
-        rect_select.y -= 20;
+
         //Event Management
 	while (opened) {
 		while(SDL_PollEvent(&events)) {
@@ -127,12 +155,12 @@ int main () {
 					printf("%i and %i\n", mouse_x, 
 					mouse_y);
 					//Change detection collision
-					SDL_Point mouse_pos = {mouse_x, 
+					/*SDL_Point mouse_pos = {mouse_x, 
 					mouse_y};
 					if (SDL_PointInRect(&mouse_pos, 
 						&rect_select)) {
 						printf("PIXEL MODE\n");
-					}
+					}*/
 					break;
 			}
 		}
