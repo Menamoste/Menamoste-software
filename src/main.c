@@ -24,7 +24,7 @@ int main () {
 	//Data
 
     	//Box Blur Matrix
-    	/*matrix *convo = matrix_zero(3, 3);
+    	matrix *convo = matrix_zero(3, 3);
    	matrix_set(convo, 0, 0, 0.1111111);
    	matrix_set(convo, 0, 1, 0.1111111);
     	matrix_set(convo, 0, 2, 0.1111111);
@@ -33,10 +33,10 @@ int main () {
     	matrix_set(convo, 1, 2, 0.1111111);
     	matrix_set(convo, 2, 0, 0.1111111);
     	matrix_set(convo, 2, 1, 0.1111111);
-    	matrix_set(convo, 2, 2, 0.1111111);*/
+    	matrix_set(convo, 2, 2, 0.1111111);
 
    	//Contrast Matrix
-    	/*matrix *convo2 = matrix_zero(3, 3);
+    	matrix *convo2 = matrix_zero(3, 3);
     	matrix_set(convo2, 0, 0, 0);
     	matrix_set(convo2, 0, 1, -1);
     	matrix_set(convo2, 0, 2, 0);
@@ -45,7 +45,7 @@ int main () {
     	matrix_set(convo2, 1, 2, -1);
     	matrix_set(convo2, 2, 0, 0);
     	matrix_set(convo2, 2, 1, -1);
-    	matrix_set(convo2, 2, 2, 0);*/
+    	matrix_set(convo2, 2, 2, 0);
 
 	//Colors for icons
 	SDL_Color colors[9];
@@ -59,6 +59,7 @@ int main () {
 	set_color(colors, 7, 0  , 0  , 255, 255);
 	set_color(colors, 8, 127, 127, 255, 255);
 
+	//Program
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		SDL_Log("Erreur > %s\n", SDL_GetError());
@@ -90,18 +91,19 @@ int main () {
 	//Icons
  	SDL_Rect rects[9]; 
     	size_t x = 1100;
-    	for(size_t i  = 0; i < 9; i++)
+    	for (size_t i  = 0; i < 9; i++)
     	{
-		set_rect(&rects[i], x, 100, 50, 50);
+		set_rect(&rects[i], x, 100, 64, 64);
 		draw_rect(renderer, rects[i], colors[i]);
         	x += 100;
     	}
+	
     	size_t y = 300;
-    	for(size_t i = 0; i < 4; i++)
+    	for (size_t i = 0; i < 4; i++)
     	{
-		set_rect(&rects[i], y, 100, 50, 50);
+		set_rect(&rects[i], y, 100, 64, 64);
 		draw_rect(renderer, rects[i], colors[i]);
-        	y += 50;     
+        	y += 64;     
     	}
 
 	//Image
@@ -120,18 +122,42 @@ int main () {
 		return -1;
 	}
 
-	size_t image_width = image_surface->w;
-	size_t image_height = image_surface->h;
-
 	SDL_FreeSurface(image_surface);
 	
-	//Set image on renderer with a rectangle.
-	SDL_Rect image_rect = {window_width / 3, window_height / 4, image_width,
-	image_height};
+	//Set surfaces on renderer.
+	//First the image.
+	SDL_Rect image_rect = {window_width / 3, window_height / 4, 0, 0};
 	SDL_QueryTexture(image_texture, NULL, NULL, &image_rect.w, &image_rect.h);
 	SDL_RenderCopy(renderer, image_texture, NULL, &image_rect);
-	SDL_RenderPresent(renderer);
 
+	//Then the icons : 
+	//Load the icons on surfaces.
+	SDL_Surface *pencil_surface = SDL_LoadBMP("../res/Icons/pensil.bmp");
+	SDL_Surface *cursor_surface = SDL_LoadBMP("../res/Icons/cursor.bmp");
+	SDL_Surface *eraser_surface = SDL_LoadBMP("../res/Icons/eraser.bmp");
+	SDL_Surface *bucket_surface = SDL_LoadBMP("../res/Icons/bucket.bmp");
+
+	//Then put them in textures.
+	SDL_Texture *pencil_texture = SDL_CreateTextureFromSurface(renderer,
+	pencil_surface);
+	SDL_Texture *cursor_texture = SDL_CreateTextureFromSurface(renderer,
+	cursor_surface);
+	SDL_Texture *eraser_texture = SDL_CreateTextureFromSurface(renderer,
+	eraser_surface);
+	SDL_Texture *bucket_texture = SDL_CreateTextureFromSurface(renderer,
+	bucket_surface);
+	//Free the surfaces.
+	SDL_FreeSurface(pencil_surface);
+	SDL_FreeSurface(cursor_surface);
+	SDL_FreeSurface(eraser_surface);
+	SDL_FreeSurface(bucket_surface);
+	//And finally copy them where they belong.
+	SDL_RenderCopy(renderer, pencil_texture, NULL, &rects[0]);
+	SDL_RenderCopy(renderer, cursor_texture, NULL, &rects[1]);
+	SDL_RenderCopy(renderer, eraser_texture, NULL, &rects[2]);
+	SDL_RenderCopy(renderer, bucket_texture, NULL, &rects[3]);
+	//Show the result.
+	SDL_RenderPresent(renderer);
 	//Detection of mouse click in rect_select
 	char opened = 1;
 	SDL_Event events;
