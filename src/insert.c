@@ -12,5 +12,5 @@ void insert(SDL_Surface *sur)
 	position.x = 0;
 	position.y = 0;
 	SDL_BlitSurface(my_image, NULL, sur, &position);
-	SDL_Flip(sur);
+	//SDL_Flip(sur);
 }
