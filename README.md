@@ -10,7 +10,7 @@ Note that this projet needs the SDL_ttf and SDL_image libraries to work successf
 They are used for text and other image types manipulation.
 
 ### Run
-After having built the project, the app is located at bin/ocr.
+After having built the project, the app is located at bin/main.
 
 ### Example
 The res folder contains some example images.
