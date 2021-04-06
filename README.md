@@ -34,6 +34,9 @@ You should try with res/Lenna.bmp.
   + tools.c = Contains all the tools for image manipulation.
   + tools.h = Header for the tools.c with explanations of the functions.
 
+  + colors.c = Contains the colors functions.
+  + colors.h = Header for the colors.c file.
+
 + bin - Folder that contains the executable file (can be removed by using the
         make clean command).
 
