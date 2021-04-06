@@ -4,6 +4,7 @@
 #include "gui.h"
 #include "matrix.h"
 #include "tools.h"
+#include "resize.h"
 
 const size_t window_width = 1920;
 const size_t window_height = 1080;
