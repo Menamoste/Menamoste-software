@@ -90,21 +90,27 @@ int main () {
 	SDL_RenderPresent(renderer);
 
 	//Icons
- 	SDL_Rect rects[9]; 
-    	size_t x = 1100;
-    	for (size_t i  = 0; i < 9; i++)
+
+        const size_t nb_rects = 17;
+        const size_t nb_colors = 9;
+
+ 	SDL_Rect rects[nb_rects]; 
+        size_t x = 50;
+
+	//Icons images
+    	for (size_t i = 0; i < 8; i++)
     	{
 		set_rect(&rects[i], x, 100, 64, 64);
-		draw_rect(renderer, rects[i], colors[i]);
-        	x += 100;
+        	x += 85;     
     	}
-	
-    	size_t y = 300;
-    	for (size_t i = 0; i < 4; i++)
+        
+        x += 250;
+        //Icons colors
+    	for (size_t i = 8; i < nb_rects; i++)
     	{
-		set_rect(&rects[i], y, 100, 64, 64);
-		draw_rect(renderer, rects[i], colors[i]);
-        	y += 64;     
+		set_rect(&rects[i], x, 100, 64, 64);
+		draw_rect(renderer, rects[i], colors[i + 1 - nb_colors]);
+        	x += 100;
     	}
 
 	//Image
@@ -131,13 +137,16 @@ int main () {
 	SDL_QueryTexture(image_texture, NULL, NULL, &image_rect.w, &image_rect.h);
 	SDL_RenderCopy(renderer, image_texture, NULL, &image_rect);
 
-	//Then the icons : 
+	//Then the icons :
 	//Load the icons on surfaces.
 	SDL_Surface *pencil_surface = SDL_LoadBMP("../res/Icons/pensil.bmp");
 	SDL_Surface *cursor_surface = SDL_LoadBMP("../res/Icons/cursor.bmp");
 	SDL_Surface *eraser_surface = SDL_LoadBMP("../res/Icons/eraser.bmp");
 	SDL_Surface *bucket_surface = SDL_LoadBMP("../res/Icons/bucket.bmp");
-
+	SDL_Surface *filter_surface = SDL_LoadBMP("../res/Icons/filter.bmp");
+	SDL_Surface *group_surface  = SDL_LoadBMP("../res/Icons/group.bmp");
+	SDL_Surface *resize_surface = SDL_LoadBMP("../res/Icons/resize.bmp");
+	SDL_Surface *rotate_surface = SDL_LoadBMP("../res/Icons/rotate.bmp");
 	//Then put them in textures.
 	SDL_Texture *pencil_texture = SDL_CreateTextureFromSurface(renderer,
 	pencil_surface);
@@ -147,16 +156,32 @@ int main () {
 	eraser_surface);
 	SDL_Texture *bucket_texture = SDL_CreateTextureFromSurface(renderer,
 	bucket_surface);
+	SDL_Texture *filter_texture = SDL_CreateTextureFromSurface(renderer,
+	filter_surface);
+	SDL_Texture *group_texture  = SDL_CreateTextureFromSurface(renderer,
+	group_surface);
+        SDL_Texture *resize_texture = SDL_CreateTextureFromSurface(renderer,
+	resize_surface);
+	SDL_Texture *rotate_texture = SDL_CreateTextureFromSurface(renderer,
+	rotate_surface);
 	//Free the surfaces.
 	SDL_FreeSurface(pencil_surface);
 	SDL_FreeSurface(cursor_surface);
 	SDL_FreeSurface(eraser_surface);
 	SDL_FreeSurface(bucket_surface);
+	SDL_FreeSurface(filter_surface);
+	SDL_FreeSurface(group_surface) ;
+	SDL_FreeSurface(resize_surface);
+	SDL_FreeSurface(rotate_surface);
 	//And finally copy them where they belong.
 	SDL_RenderCopy(renderer, pencil_texture, NULL, &rects[0]);
 	SDL_RenderCopy(renderer, cursor_texture, NULL, &rects[1]);
 	SDL_RenderCopy(renderer, eraser_texture, NULL, &rects[2]);
 	SDL_RenderCopy(renderer, bucket_texture, NULL, &rects[3]);
+	SDL_RenderCopy(renderer, filter_texture, NULL, &rects[4]);
+	SDL_RenderCopy(renderer, group_texture , NULL, &rects[5]);
+	SDL_RenderCopy(renderer, resize_texture, NULL, &rects[6]);
+	SDL_RenderCopy(renderer, rotate_texture, NULL, &rects[7]);
 	//Show the result.
 	SDL_RenderPresent(renderer);
 	//Detection of mouse click in rect_select
