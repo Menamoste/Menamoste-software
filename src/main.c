@@ -207,12 +207,26 @@ int main () {
 					printf("%i and %i\n", mouse_x, 
 					mouse_y);
 					//Change detection collision
-					/*SDL_Point mouse_pos = {mouse_x, 
+					SDL_Point mouse_pos = {mouse_x, 
 					mouse_y};
 					if (SDL_PointInRect(&mouse_pos, 
-						&rect_select)) {
-						printf("PIXEL MODE\n");
-					}*/
+						&rects[0])) {
+						printf("PENCIL\n");
+					}
+					if (SDL_PointInRect(&mouse_pos, 
+					        &rects[4])) {
+						printf("FILTER\n");
+					}
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[6])) {
+						printf("RESIZE\n");
+					}
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[7])) {
+						printf("ROTATE\n");
+					}
+
+
 					break;
 			}
 		}
