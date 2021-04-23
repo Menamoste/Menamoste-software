@@ -26,13 +26,13 @@ void matrix_free(matrix *mat) {
 
 float matrix_get(const matrix *mat, size_t i, size_t j) {
 	if (i > mat->rows || j > mat->cols)
-		err(EXIT_FAILURE, "Coordinates out of bounds.");
+		err(EXIT_FAILURE, "matrix_get : Coordinates out of bounds.");
 	return MAT_GET(mat, i, j);
 }
 
 void matrix_set(matrix *mat, size_t i, size_t j, float val) {
 	if (i > mat->rows || j > mat->cols)
-		err(EXIT_FAILURE, "Coordinates out of bounds.");
+		err(EXIT_FAILURE, "matrix_set : Coordinates out of bounds.");
 	MAT_GET(mat, i, j) = val;
 }
 

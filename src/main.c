@@ -2,6 +2,8 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include "gui.h"
+#include "tools.h"
+#include "color.h"
 
 //Constants
 const size_t window_width  = 1920;
@@ -95,18 +97,41 @@ int main ()
     	for (size_t i = nb_icons; i < nb_rects; i++)
 		draw_rect(renderer, rects[i], colors[i - nb_icons]);
 
-	SDL_Rect *image_rect = &rects[nb_rects -  1];
-	//Print the screen.
-	print_image(window, renderer, image_rect, convo, 0);
+	//WARNING
+
 
 	//Then the icons.
 	load_rects(renderer, rects);
 
-	//Show the result.
+	//Print the result on the renderer.
 	SDL_RenderPresent(renderer);
-	
+
+	//Get the image's surface.
+	SDL_Surface *image_surface = SDL_LoadBMP("../res/Images/Lenna.bmp");
+	if (!image_surface) 
+	{
+		SDL_Log("Erreur : %s\n", SDL_GetError());
+		cleanResources(window, renderer, NULL);
+		return -1;
+	}
+
+	//Get the matrix
+	matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
+
+	//Set the image coordinates.
+	SDL_Rect *image_rect = &rects[nb_rects - 1];
+	set_rect(image_rect, window_width / 3, window_height / 4, 0, 0);
+
+	//Print the image.
+	print_image(renderer, image_rect, image_surface, mat_pack);
+
+
+
+	//END OF WARNING
+
 	//Event Management
 	char opened = 1;
+	char is_resized = 0;
 	char is_pencil = 0;
 	SDL_Event events;
 	int mouse_x = 0;
@@ -126,42 +151,92 @@ int main ()
 					//Pencil
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[0])) {
+						printf("pencil\n");
 						is_pencil++;
 					}
 					//Bucket
 					//Clear board
 					if (SDL_PointInRect(&mouse_pos, 
-						&rects[3])) {
-						print_image(window, renderer, 
-						image_rect, convo, 0);
-						is_pencil = 0;
+						&rects[3])) 
+						{
+						printf("bucket\n");
+						/*matrix_pack *mat_pack2 = 
+						modify_image(mat_pack, convo, 
+						4);
+						print_image(renderer, 
+						image_rect, image_surface, 
+						mat_pack2);
+						is_resized = 0;
+						is_pencil = 0;*/
 					}
 					//Filter
 					if (SDL_PointInRect(&mouse_pos, 
 					        &rects[4])) {
-						print_image(window, renderer, 
-						image_rect, convo, 1);
-						is_pencil = 0;
+						printf("filter\n");
+						if (is_resized == 0) 
+						{
+							matrix_pack *mat_pack2= 
+							modify_image(mat_pack, 
+							convo, 1);
+							print_image(renderer, 
+							image_rect, 
+							image_surface, 
+							mat_pack2);
+							is_pencil = 0;
+						}
 					}
 					//Resize
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[6])) {
-						print_image(window, renderer, 
-						image_rect, convo, 2);
-						is_pencil = 0;
+						printf("resize\n");
+						if (is_resized == 0)
+						{
+							matrix_pack *mat_pack2 
+							= modify_image(mat_pack
+							, convo, 2);
+							
+							SDL_Color color[1];
+							set_color(color, 0, 100, 100, 100, 0);
+
+							draw_rect(renderer, *image_rect, color[0]);
+
+							image_surface = 
+							SDL_CreateRGBSurface(0, mat_pack2->r->cols, mat_pack2->r->rows, 32, 0, 0, 0, 0);
+							print_image(renderer, 
+							image_rect, 
+							image_surface, 
+							mat_pack2);
+							is_pencil = 0;
+							is_resized++;
+						}
 					}
 					//Rotate
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[7])) {
-						print_image(window, renderer, 
-						image_rect, convo2, 3);
+						printf("rotate\n");
+						matrix_pack *mat_pack2 = 
+						modify_image(mat_pack, convo, 
+						3);
+						print_image(renderer, 
+						image_rect, image_surface, 
+						mat_pack2);
 						is_pencil = 0;
 					}
 					//Image
 					if (SDL_PointInRect(&mouse_pos, 
 						image_rect)) {
-						printf("test\n");
-						is_pencil++;
+						printf("Try to color\n");
+						triplet trip = {1.0f, 0.0f, 0.0f};
+						int rel_x = mouse_x - 
+						window_width / 3;
+						int rel_y = mouse_y - 
+						window_height / 4;
+						color_pixel(mat_pack, 
+						image_surface, trip, rel_x, 
+						rel_y);
+						print_image(renderer, 
+						image_rect, image_surface,
+						mat_pack);
 					}
 					break;
 			}

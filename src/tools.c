@@ -92,7 +92,6 @@ void mat_pack_to_sur(SDL_Surface *sur, matrix_pack *mat_pack) {
 	size_t width  = sur->w;
 	size_t height = sur->h;
 	Uint32 pixel  = 0;
-
 	for (size_t i = 0; i < width; i++) {
 		for (size_t j = 0; j < height; j++) {
 			triplet trip = mat_pack_get(mat_pack, j, i);
@@ -126,6 +125,23 @@ matrix_pack *rotation(matrix_pack *mat_pack, unsigned char angle) {
 			if (x2 >= 0 && y2 >= 0 && x2 < cols && y2 < rows) {
 				triplet trip = mat_pack_get(mat_pack, x, y);
 				mat_pack_set(result, x2, y2, trip);
+			}
+		}
+	}
+	//TODO : Works but can be improved
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows; y++) {
+			triplet trip = mat_pack_get(result, x, y);
+			//Black Pixel
+			if (trip.r == 0.0 && trip.g == 0.0 && trip.b == 0.0) {
+				if (x < rows - 1) {
+					trip = mat_pack_get(result, x + 1, y);
+					//Is neighbour not black pixel
+					if (trip.r != 0.0 && trip.g != 0.0 
+						&& trip.b != 0.0) {
+						mat_pack_set(result, x, y, trip);
+					}
+				}
 			}
 		}
 	}
