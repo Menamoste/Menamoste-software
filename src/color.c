@@ -4,7 +4,7 @@
 void color_pixel(matrix_pack *mat_pack, SDL_Surface *sur, triplet trip, 
 int x, int y)
 {
-    int radius = 30;
+    int radius = 15;
     int width = sur->w;
     int height = sur->h;
     unsigned char new_r = trip.r * 255;

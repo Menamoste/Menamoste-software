@@ -36,7 +36,7 @@ void place_rects(SDL_Rect *rects)
 		set_rect(&rects[i], x, y, icon_size, icon_size);
         	x += 85;     
     	}
-        x += 250;
+        x += 150;
 
         //Icons colors placement
     	for (size_t i = nb_icons; i < nb_rects; i++)

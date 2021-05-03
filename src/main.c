@@ -17,6 +17,18 @@ const size_t nb_icons      = 8;
 //Stores all the colors.
 SDL_Color colors[9];
 
+void color_to_trip(SDL_Color color, triplet *trip)
+{
+    float r_val = (float)color.r;
+    r_val /= 255.0;
+    float g_val = (float)color.g;
+    g_val /= 255.0;
+    float b_val = (float)color.b;
+    b_val /= 255.0;
+    trip->r = r_val;
+    trip->g = g_val;
+    trip->b = b_val;
+}
 int main () 
 {
 	//Data
@@ -28,8 +40,8 @@ int main ()
 	set_color(colors, 4,   0, 255, 255, 255);
 	set_color(colors, 5, 255, 255, 0  , 255);
 	set_color(colors, 6, 255, 255, 255, 255);
-	set_color(colors, 7, 0  , 0  , 255, 255);
-	set_color(colors, 8, 127, 127, 255, 255);
+	set_color(colors, 7, 127, 127, 127, 255);
+	set_color(colors, 8, 0  , 0  , 0  , 255);
 
 	//Matrices
    	//Contrast Matrix
@@ -89,16 +101,13 @@ int main ()
 	//Stores all the surfaces.
 	SDL_Rect rects[nb_rects];
 
-	//Icons	
+	//Icons
 	//Icons management
 	place_rects(rects); 
 
 	//Draw the color icons
-    	for (size_t i = nb_icons; i < nb_rects; i++)
+    	for (size_t i = nb_icons; i < nb_rects - 1; i++)
 		draw_rect(renderer, rects[i], colors[i - nb_icons]);
-
-	//WARNING
-
 
 	//Then the icons.
 	load_rects(renderer, rects);
@@ -126,16 +135,15 @@ int main ()
 	print_image(renderer, image_rect, image_surface, mat_pack);
 
 
-
-	//END OF WARNING
-
 	//Event Management
-	char opened = 1;
+	char opened     = 1;
 	char is_resized = 0;
-	char is_pencil = 0;
+	char is_pencil  = 0;
+	int mouse_x     = 0;
+	int mouse_y     = 0;
 	SDL_Event events;
-	int mouse_x = 0;
-	int mouse_y = 0;
+        //Color of the pencil
+	triplet trip = {1.0f, 0.0f, 0.0f};
 	while (opened) {
 		while(SDL_PollEvent(&events)) {
 			switch (events.type) {
@@ -196,12 +204,18 @@ int main ()
 							, convo, 2);
 							
 							SDL_Color color[1];
-							set_color(color, 0, 100, 100, 100, 0);
+							set_color(color, 0, 
+                                                            100, 100, 100, 0);
 
-							draw_rect(renderer, *image_rect, color[0]);
+							draw_rect(renderer, 
+                                                                *image_rect, 
+                                                                color[0]);
 
 							image_surface = 
-							SDL_CreateRGBSurface(0, mat_pack2->r->cols, mat_pack2->r->rows, 32, 0, 0, 0, 0);
+							SDL_CreateRGBSurface(0,
+                                                        mat_pack2->r->cols, 
+                                                        mat_pack2->r->rows, 
+                                                        32, 0, 0, 0, 0);
 							print_image(renderer, 
 							image_rect, 
 							image_surface, 
@@ -225,19 +239,66 @@ int main ()
 					//Image
 					if (SDL_PointInRect(&mouse_pos, 
 						image_rect)) {
-						printf("Try to color\n");
-						triplet trip = {1.0f, 0.0f, 0.0f};
-						int rel_x = mouse_x - 
-						window_width / 3;
-						int rel_y = mouse_y - 
-						window_height / 4;
-						color_pixel(mat_pack, 
-						image_surface, trip, rel_x, 
-						rel_y);
-						print_image(renderer, 
-						image_rect, image_surface,
-						mat_pack);
-					}
+						printf("image\n");
+                                                if (is_pencil == 1)
+                                                {
+						    int rel_x = mouse_x - 
+						    window_width / 3;
+						    int rel_y = mouse_y - 
+						    window_height / 4;
+						    color_pixel(mat_pack, 
+						    image_surface, trip, rel_x, 
+						    rel_y);
+						    print_image(renderer, 
+						    image_rect, image_surface,
+						    mat_pack);
+                                                }
+                                        }
+                                        //Color red
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons])) {
+                                                color_to_trip(colors[0],&trip);
+                                        }
+                                        //Color green
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 1])) {
+                                                color_to_trip(colors[1],&trip);
+                                        }
+                                        //Color dark blue
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 2])) {
+                                                color_to_trip(colors[2],&trip);
+                                        }
+                                        //Color magenta
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 3])) {
+                                                color_to_trip(colors[3],&trip);
+                                        }
+                                        //Color light blue
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 4])) {
+                                                color_to_trip(colors[4],&trip);
+                                        }
+                                        //Color yellow
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 5])) {
+                                                color_to_trip(colors[5],&trip);
+                                        }
+                                        //Color white
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 6])) {
+                                                color_to_trip(colors[6],&trip);
+                                        }
+                                        //Color dark blue
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 7])) {
+                                                color_to_trip(colors[7],&trip);
+                                        }
+                                        //Color black
+					if (SDL_PointInRect(&mouse_pos, 
+						&rects[nb_icons + 8])) {
+                                                color_to_trip(colors[8],&trip);
+                                        }
 					break;
 			}
 		}
