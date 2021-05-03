@@ -140,18 +140,6 @@ matrix_pack *modify_image(matrix_pack *mat_pack, matrix *convo, int mode)
 		matrix_pack *mat_pack2 = rotation(mat_pack, 45);
 		return mat_pack2;
 	}
-	//Mode bucket
-	if (mode == 4) 
-	{
-		SDL_Surface *image_surface = 
-		SDL_LoadBMP("../res/Images/Lenna.bmp");
-		if (!image_surface) 
-			SDL_Log("Erreur : %s\n", SDL_GetError());
-		matrix_pack *mat_pack2 = sur_to_mat_pack(image_surface);
-		SDL_FreeSurface(image_surface);
-		mat_pack_free(mat_pack);
-		return mat_pack2;
-	}
 	else 
 	{
 		printf("Problem\n");

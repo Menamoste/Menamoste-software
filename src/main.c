@@ -4,14 +4,20 @@
 #include "gui.h"
 #include "tools.h"
 #include "color.h"
+#include "ttf.h"
+
+#define PATH_MAX_LENGTH 35
 
 //Constants
-const size_t window_width  = 1920;
-const size_t window_height = 1080;
-const size_t icon_size     = 64;
-const size_t nb_rects      = 18;
-const size_t nb_colors     = 9;
-const size_t nb_icons      = 8;
+const size_t window0_width   = 600;
+const size_t window0_height  = 200;
+const size_t window_width    = 1920;
+const size_t window_height   = 1080;
+const size_t icon_size       = 64;
+const size_t nb_rects        = 18;
+const size_t nb_colors       = 9;
+const size_t nb_icons        = 8;
+const size_t path_max_length = PATH_MAX_LENGTH;
 
 //SDL Variables
 //Stores all the colors.
@@ -70,6 +76,32 @@ int main ()
 
 
 	//Program
+
+
+	//MOAD'S PART
+	char path[PATH_MAX_LENGTH] = "";
+
+	SDL_Window *window0 = SDL_CreateWindow("Menamoste Image Editor", 
+	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window0_width,
+	window0_height, 0);
+	if (!window0) {
+		SDL_Log("Erreur : %s\n", SDL_GetError());
+		cleanResources(NULL, NULL, NULL);
+		return -1;
+	}
+	SDL_Renderer *renderer0 = SDL_CreateRenderer(window0, -1, 
+	SDL_RENDERER_SOFTWARE);
+	if (!renderer0) {
+		SDL_Log("Erreur : %s\n", SDL_GetError());
+		cleanResources(window0, NULL, NULL);
+		return -1;
+	}
+        
+	path_input(renderer0, path);
+	cleanResources(window0, renderer0, NULL);
+	//END OF MOAD'S PART
+
+
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		SDL_Log("Erreur > %s\n", SDL_GetError());
@@ -116,7 +148,7 @@ int main ()
 	SDL_RenderPresent(renderer);
 
 	//Get the image's surface.
-	SDL_Surface *image_surface = SDL_LoadBMP("../res/Images/Lenna.bmp");
+	SDL_Surface *image_surface = SDL_LoadBMP(path);
 	if (!image_surface) 
 	{
 		SDL_Log("Erreur : %s\n", SDL_GetError());
@@ -138,7 +170,7 @@ int main ()
 	//Event Management
 	char opened     = 1;
 	char is_resized = 0;
-	char is_pencil  = 0;
+	char is_pencil  = 1;
 	int mouse_x     = 0;
 	int mouse_y     = 0;
 	SDL_Event events;
@@ -159,28 +191,11 @@ int main ()
 					//Pencil
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[0])) {
-						printf("pencil\n");
 						is_pencil++;
-					}
-					//Bucket
-					//Clear board
-					if (SDL_PointInRect(&mouse_pos, 
-						&rects[3])) 
-						{
-						printf("bucket\n");
-						/*matrix_pack *mat_pack2 = 
-						modify_image(mat_pack, convo, 
-						4);
-						print_image(renderer, 
-						image_rect, image_surface, 
-						mat_pack2);
-						is_resized = 0;
-						is_pencil = 0;*/
 					}
 					//Filter
 					if (SDL_PointInRect(&mouse_pos, 
 					        &rects[4])) {
-						printf("filter\n");
 						if (is_resized == 0) 
 						{
 							matrix_pack *mat_pack2= 
@@ -196,7 +211,6 @@ int main ()
 					//Resize
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[6])) {
-						printf("resize\n");
 						if (is_resized == 0)
 						{
 							matrix_pack *mat_pack2 
@@ -227,7 +241,6 @@ int main ()
 					//Rotate
 					if (SDL_PointInRect(&mouse_pos, 
 						&rects[7])) {
-						printf("rotate\n");
 						matrix_pack *mat_pack2 = 
 						modify_image(mat_pack, convo, 
 						3);
@@ -239,7 +252,6 @@ int main ()
 					//Image
 					if (SDL_PointInRect(&mouse_pos, 
 						image_rect)) {
-						printf("image\n");
                                                 if (is_pencil == 1)
                                                 {
 						    int rel_x = mouse_x - 
