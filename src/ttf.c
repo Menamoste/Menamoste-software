@@ -68,7 +68,7 @@ void rm_last_char(char *txt)
 }
 
 
-void put_letter(SDL_Event event, char * path, SDL_Color *color, int capslock, char l)
+void put_letter(SDL_Event event, char *path, SDL_Color *color, int capslock, char l)
 {
     if (event.key.keysym.mod & KMOD_LSHIFT || capslock)         	
         l = toupper(l);
@@ -98,7 +98,8 @@ void text_set_pos(Text *text, int x, int y)
 	text->y = y;
 }
 
-void update_text_pos(SDL_Renderer *renderer, Text *text1, Text *text2, Text *text3, SDL_Rect rect, int *x, int *y)
+void update_text_pos(SDL_Renderer *renderer, Text *text1, Text *text2, 
+Text *text3, SDL_Rect rect, int *x, int *y)
 {
 	// PATH
 	*x = (window0_width - rect.w)/2;
@@ -187,10 +188,12 @@ void path_input(SDL_Renderer *renderer, char *path)
                 
                 case SDL_KEYDOWN:
                     // CTRL to paste text from clipboard
-                    if (SDL_HasClipboardText() && event.key.keysym.mod & KMOD_CTRL)
+                    if (SDL_HasClipboardText() && event.key.keysym.mod && 
+							KMOD_CTRL)
                     {
                         path = SDL_GetClipboardText();
-                        get_text_and_rect(renderer, x_path, y_path, path, f_path, &t_path, &rect_path, col_path);
+                        get_text_and_rect(renderer, x_path, y_path, path, 
+						f_path, &t_path, &rect_path, col_path);
                     }
                     switch (event.key.keysym.sym)
                     {
@@ -210,7 +213,8 @@ void path_input(SDL_Renderer *renderer, char *path)
 							SDL_RenderClear(renderer); 
 							
 							// to display title
-							SDL_RenderCopy(renderer, title.texture, NULL, &title.rect);
+							SDL_RenderCopy(renderer, title.texture, NULL, 
+							&title.rect);
 							
 							// load SDL_Surface* at path
 							image = SDL_LoadBMP(path); 
@@ -220,12 +224,16 @@ void path_input(SDL_Renderer *renderer, char *path)
 								// set text color to green
 								col_path = green;
 								// update texts 
-								update_text_pos(renderer, &title, &file_nf, &opening_f, rect_path, &x_path, &y_path);
-								get_text_and_rect(renderer, x_path, y_path, path, f_path, &t_path, &rect_path, col_path);
+								update_text_pos(renderer, &title, &file_nf, 
+								&opening_f, rect_path, &x_path, &y_path);
+								get_text_and_rect(renderer, x_path, y_path, 
+								path, f_path, &t_path, &rect_path, col_path);
 								// to display path
-								SDL_RenderCopy(renderer, t_path, NULL, &rect_path);
+								SDL_RenderCopy(renderer, t_path, NULL, 
+								&rect_path);
 								// to display "Opening file..."
-								SDL_RenderCopy(renderer, opening_f.texture, NULL, &opening_f.rect);
+								SDL_RenderCopy(renderer, opening_f.texture, 
+								NULL, &opening_f.rect);
 								// display on renderer
 								SDL_RenderPresent(renderer);
 								// waits for 2.5 secs
@@ -239,12 +247,16 @@ void path_input(SDL_Renderer *renderer, char *path)
 								col_path = red;
 								
 								// update texts positions
-								update_text_pos(renderer, &title, &file_nf, &opening_f, rect_path, &x_path, &y_path);
-								get_text_and_rect(renderer, x_path, y_path, path, f_path, &t_path, &rect_path, col_path);
+								update_text_pos(renderer, &title, &file_nf, 
+								&opening_f, rect_path, &x_path, &y_path);
+								get_text_and_rect(renderer, x_path, y_path, 
+								path, f_path, &t_path, &rect_path, col_path);
 								// to display path
-								SDL_RenderCopy(renderer, t_path, NULL, &rect_path);
+								SDL_RenderCopy(renderer, t_path, NULL, 
+								&rect_path);
 								// to display "file not found !"
-								SDL_RenderCopy(renderer, file_nf.texture, NULL, &file_nf.rect);
+								SDL_RenderCopy(renderer, file_nf.texture, 
+								NULL, &file_nf.rect);
 								// display on renderer
 								SDL_RenderPresent(renderer);
 								// waits for 1.5 secs
@@ -259,175 +271,15 @@ void path_input(SDL_Renderer *renderer, char *path)
 							rm_last_char(path);
 							col_path = black;
 							break;
-
-						case SDLK_a:
-							put_letter(event, path, &col_path, capslock, 'a');
-                            break;
-
-                        case SDLK_b:
-							put_letter(event, path, &col_path, capslock, 'b');
-                            break;
-
-                        case SDLK_c:
-							put_letter(event, path, &col_path, capslock, 'c');
-                            break;
-
-                        case SDLK_d:
-							put_letter(event, path, &col_path, capslock, 'd');
-                            break;
-
-                        case SDLK_e:
-							put_letter(event, path, &col_path, capslock, 'e');
-                            break;
-
-                        case SDLK_f:
-							put_letter(event, path, &col_path, capslock, 'f');
-                            break;
-
-                        case SDLK_g:
-							put_letter(event, path, &col_path, capslock, 'g');
-                            break;
-
-                        case SDLK_h:
-							put_letter(event, path, &col_path, capslock, 'h');
-                            break;
-
-                        case SDLK_i:
-							put_letter(event, path, &col_path, capslock, 'i');
-                            break;
-
-                        case SDLK_j:
-							put_letter(event, path, &col_path, capslock, 'j');
-                            break;
-
-                        case SDLK_k:
-							put_letter(event, path, &col_path, capslock, 'k');
-                            break;
-
-                        case SDLK_l:
-							put_letter(event, path, &col_path, capslock, 'l');
-                            break;
-
-                        case SDLK_m:
-							put_letter(event, path, &col_path, capslock, 'm');
-                            break;
-
-                        case SDLK_n:
-							put_letter(event, path, &col_path, capslock, 'n');
-                            break;
-
-                        case SDLK_o:
-							put_letter(event, path, &col_path, capslock, 'o');
-                            break; 
-
-                        case SDLK_p:
-							put_letter(event, path, &col_path, capslock, 'p');
-                            break; 
-
-                        case SDLK_q:
-							put_letter(event, path, &col_path, capslock, 'q');
-                            break;
-
-                        case SDLK_r:
-							put_letter(event, path, &col_path, capslock, 'r');
-                            break; 
-
-                        case SDLK_s:
-							put_letter(event, path, &col_path, capslock, 's');
-                            break;
-
-                        case SDLK_t:
-							put_letter(event, path, &col_path, capslock, 't');
-                            break; 
-
-                        case SDLK_u:
-							put_letter(event, path, &col_path, capslock, 'u');
-                            break; 
-
-                        case SDLK_v:
-							put_letter(event, path, &col_path, capslock, 'v');
-                            break; 
-
-                        case SDLK_w:
-							put_letter(event, path, &col_path, capslock, 'w');
-                            break; 
-
-                        case SDLK_x:
-							put_letter(event, path, &col_path, capslock, 'x');
-                            break;
-
-                        case SDLK_y:
-							put_letter(event, path, &col_path, capslock, 'y');
-                            break;
-
-                        case SDLK_z:
-							put_letter(event, path, &col_path, capslock, 'z');
-                            break; 
-
-						case SDLK_0:
-							input_txt(path, &col_path, '0');
-							break;
-
-						case SDLK_1:
-							input_txt(path, &col_path, '1');
-							break;
-
-						case SDLK_2:
-							input_txt(path, &col_path, '2');
-							break;
-
-						case SDLK_3:
-							input_txt(path, &col_path, '3');
-							break;
-
-						case SDLK_4:
-							input_txt(path, &col_path, '4');
-							break;
-
-						case SDLK_5:
-							input_txt(path, &col_path, '5');
-							break;
-
-						case SDLK_6:
-							input_txt(path, &col_path, '6');
-							break;
-
-						case SDLK_7:
-							input_txt(path, &col_path, '7');
-							break;
-
-						case SDLK_8:
-							input_txt(path, &col_path, '8');
-							break;
-
-						case SDLK_9:
-							input_txt(path, &col_path, '9');
-							break;
-
-						case SDLK_PERIOD:
-							input_txt(path, &col_path, '.');
-							break;
-
-						case SDLK_SEMICOLON:
-							input_txt(path, &col_path, '.');
-							break;
-
-						case SDLK_COLON:
-							input_txt(path, &col_path, '/');
-							break;
-
-						case SDLK_SLASH:
-							input_txt(path, &col_path, '/');
-							break;
-
-						case SDLK_UNDERSCORE:
-							input_txt(path, &col_path, '/');
-							break;
                     }
+
+
 					
 					// updates text positions
-					update_text_pos(renderer, &title, &file_nf, &opening_f, rect_path, &x_path, &y_path);
-					get_text_and_rect(renderer, x_path, y_path, path, f_path, &t_path, &rect_path, col_path);
+					update_text_pos(renderer, &title, &file_nf, &opening_f, 
+					rect_path, &x_path, &y_path);
+					get_text_and_rect(renderer, x_path, y_path, path, f_path, 
+					&t_path, &rect_path, col_path);
 					break;
             }
         }

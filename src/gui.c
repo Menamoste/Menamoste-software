@@ -140,11 +140,7 @@ matrix_pack *modify_image(matrix_pack *mat_pack, matrix *convo, int mode)
 		matrix_pack *mat_pack2 = rotation(mat_pack, 45);
 		return mat_pack2;
 	}
-	else 
-	{
-		printf("Problem\n");
-		return NULL;
-	}
+	return NULL;
 }
 
 void print_image(SDL_Renderer *renderer, SDL_Rect *rect, SDL_Surface *sur,

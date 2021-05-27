@@ -4,7 +4,7 @@
 #include "gui.h"
 #include "tools.h"
 #include "color.h"
-#include "ttf.h"
+#include "path.h"
 
 #define PATH_MAX_LENGTH 35
 
@@ -79,9 +79,10 @@ int main ()
 
 
 	//MOAD'S PART
-	char path[PATH_MAX_LENGTH] = "";
 
-	SDL_Window *window0 = SDL_CreateWindow("Menamoste Image Editor", 
+	char path[PATH_MAX_LENGTH] = "../res/Images/Lenna.bmp";
+
+	/*SDL_Window *window0 = SDL_CreateWindow("Menamoste Image Editor", 
 	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window0_width,
 	window0_height, 0);
 	if (!window0) {
@@ -98,7 +99,8 @@ int main ()
 	}
         
 	path_input(renderer0, path);
-	cleanResources(window0, renderer0, NULL);
+	cleanResources(window0, renderer0, NULL);*/
+
 	//END OF MOAD'S PART
 
 
@@ -143,7 +145,7 @@ int main ()
 
 	//Then the icons.
 	load_rects(renderer, rects);
-
+	
 	//Print the result on the renderer.
 	SDL_RenderPresent(renderer);
 
@@ -166,9 +168,19 @@ int main ()
 	//Print the image.
 	print_image(renderer, image_rect, image_surface, mat_pack);
 
+	//NEW PART
+	
+	SDL_Rect bar = {320, 50, 1400, 50};
+
+	fill_text_box(renderer, bar);
+
+	text_handeling(renderer);
+
+	//END OF NEW PART
 
 	//Event Management
-	char opened     = 1;
+
+    char opened     = 1;
 	char is_resized = 0;
 	char is_pencil  = 1;
 	int mouse_x     = 0;
@@ -176,6 +188,7 @@ int main ()
 	SDL_Event events;
         //Color of the pencil
 	triplet trip = {1.0f, 0.0f, 0.0f};
+
 	while (opened) {
 		while(SDL_PollEvent(&events)) {
 			switch (events.type) {
@@ -218,12 +231,9 @@ int main ()
 							, convo, 2);
 							
 							SDL_Color color[1];
-							set_color(color, 0, 
-                                                            100, 100, 100, 0);
+							set_color(color, 0, 100, 100, 100, 0);
 
-							draw_rect(renderer, 
-                                                                *image_rect, 
-                                                                color[0]);
+							draw_rect(renderer, *image_rect, color[0]);
 
 							image_surface = 
 							SDL_CreateRGBSurface(0,
