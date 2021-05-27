@@ -16,9 +16,9 @@ void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar)
 	SDL_RenderPresent(renderer);
 }
 
-void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font)
+void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font, 
+SDL_Rect bar)
 {	
-	SDL_Rect bar = {320, 50, 1400, 50};
 	SDL_Rect text_rect = bar;
     if (text[0] != 0)
     {
@@ -42,10 +42,8 @@ void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font)
 		fill_text_box(renderer, bar);
 }
 
-void text_handeling(SDL_Renderer *renderer)
+char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar)
 {
-	//Load the TTF Lib.
-	clean_init();
 	//Load the font
 	char *font_path = "../res/Fonts/arial.ttf";	
    	TTF_Font *font = TTF_OpenFont(font_path, 50);
@@ -79,7 +77,7 @@ void text_handeling(SDL_Renderer *renderer)
 						if (len != 0)
 							len--;
 						text[len] = '\0';
-						print_text(text, renderer, font);
+						print_text(text, renderer, font, bar);
 						backspace_pressed = 0;
 					}
 					else
@@ -102,17 +100,16 @@ void text_handeling(SDL_Renderer *renderer)
 					//Refresh the length.
 					len += len_to_copy;
 
-					print_text(text, renderer, font);
+					print_text(text, renderer, font, bar);
 				}
 			}
 		}
 	}
-	TTF_Quit();
+	return text;
 }
 
-void text_box(SDL_Renderer *renderer)
+char *text_box(SDL_Renderer *renderer, SDL_Rect bar)
 {
-	SDL_Rect bar = {320, 50, 1400, 50};
 	fill_text_box(renderer, bar);
-	text_handeling(renderer);
+	return text_handeling(renderer, bar);
 }

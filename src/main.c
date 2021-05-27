@@ -76,30 +76,7 @@ int main()
 
 	//Program
 
-	//MOAD'S PART
-
 	char path[PATH_MAX_LENGTH] = "../res/Images/Lenna.bmp";
-
-	/*SDL_Window *window0 = SDL_CreateWindow("Menamoste Image Editor", 
-	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window0_width,
-	window0_height, 0);
-	if (!window0) {
-		SDL_Log("Erreur : %s\n", SDL_GetError());
-		cleanResources(NULL, NULL, NULL);
-		return -1;
-	}
-	SDL_Renderer *renderer0 = SDL_CreateRenderer(window0, -1, 
-	SDL_RENDERER_SOFTWARE);
-	if (!renderer0) {
-		SDL_Log("Erreur : %s\n", SDL_GetError());
-		cleanResources(window0, NULL, NULL);
-		return -1;
-	}
-        
-	path_input(renderer0, path);
-	cleanResources(window0, renderer0, NULL);*/
-
-	//END OF MOAD'S PART
 
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1)
@@ -108,6 +85,9 @@ int main()
 		cleanResources(NULL, NULL, NULL);
 		return -1;
 	}
+
+	//Initialisation of the TTF
+	clean_init();
 
 	SDL_Window *window = SDL_CreateWindow("Menamoste Image Editor",
 										  SDL_WINDOWPOS_CENTERED, 
@@ -169,7 +149,10 @@ int main()
 	//Print the image.
 	print_image(renderer, image_rect, image_surface, mat_pack);
 
-	text_box(renderer);
+	SDL_Rect path_rect = {0, 10, 1000, 60};
+
+	char *path9 = text_box(renderer, path_rect);
+	printf("%s\n", path9);
 	
 	//Event Management
 
@@ -225,8 +208,14 @@ int main()
 				{
 					if (is_resized == 0)
 					{
+						SDL_Rect arg1_rect = {700, 700, 70, 50};	
+						SDL_Rect arg2_rect = {700, 900, 70, 50};	
+						char *arg1 = text_box(renderer, arg1_rect);
+						char *arg2 = text_box(renderer, arg2_rect);
+						printf("%s and %s\n", arg1, arg2);
+
 						matrix_pack *mat_pack2 = modify_image(mat_pack, 
-															convo, 2);
+						convo, 2);
 
 						SDL_Color color[1];
 						set_color(color, 0, 100, 100, 100, 0);
@@ -335,5 +324,6 @@ int main()
 		}
 	}
 	cleanResources(window, renderer, NULL);
+	TTF_Quit();
 	return 0;
 }

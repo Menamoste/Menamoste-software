@@ -13,11 +13,12 @@ void clean_init();
 void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar);
 
 // Writes the text.
-void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font);
+void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font, 
+SDL_Rect bar);
 
 //Manages the input and output of text.
-void text_handeling(SDL_Renderer *renderer);
+char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar);
 
 //Draw and fill the text box with text.
-void text_box(SDL_Renderer *renderer);
+char *text_box(SDL_Renderer *renderer, SDL_Rect bar);
 #endif
