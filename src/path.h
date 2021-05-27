@@ -17,4 +17,7 @@ void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font);
 
 //Manages the input and output of text.
 void text_handeling(SDL_Renderer *renderer);
+
+//Draw and fill the text box with text.
+void text_box(SDL_Renderer *renderer);
 #endif

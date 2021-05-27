@@ -104,3 +104,10 @@ void text_handeling(SDL_Renderer *renderer)
 	}
 	TTF_Quit();
 }
+
+void text_box(SDL_Renderer *renderer)
+{
+	SDL_Rect bar = {320, 50, 1400, 50};
+	fill_text_box(renderer, bar);
+	text_handeling(renderer);
+}

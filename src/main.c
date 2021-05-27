@@ -169,16 +169,8 @@ int main()
 	//Print the image.
 	print_image(renderer, image_rect, image_surface, mat_pack);
 
-	//NEW PART
-
-	SDL_Rect bar = {320, 50, 1400, 50};
-
-	fill_text_box(renderer, bar);
-
-	text_handeling(renderer);
-
-	//END OF NEW PART
-
+	text_box(renderer);
+	
 	//Event Management
 
 	char opened = 1;
