@@ -19,18 +19,23 @@ void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar)
 void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font)
 {	
 	SDL_Rect bar = {320, 50, 1400, 50};
+	SDL_Rect text_rect = bar;
     if (text[0] != 0)
     {
 		SDL_Color color = {0, 0, 0, 255};
         SDL_Surface *text_surface = TTF_RenderText_Blended(font, text, color);
+		if (text_surface->w > bar.w)
+		{
+			text_rect.x = text_surface->w - bar.w;
+		}
 		SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, 
 		text_surface);
 		SDL_FreeSurface(text_surface);
 
 		fill_text_box(renderer, bar);
 
-		SDL_QueryTexture(text_texture, NULL, NULL, &bar.w, &bar.h);
-		SDL_RenderCopy(renderer, text_texture, NULL, &bar);
+		SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
+		SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
 		SDL_RenderPresent(renderer);
     }
 	else
