@@ -115,6 +115,14 @@ void cleanResources(SDL_Window *window, SDL_Renderer *renderer,
 	SDL_Quit();
 }
 
+matrix_pack *resize_image(matrix_pack *mat_pack, int new_w, int new_y)
+{
+    	//Mode resize
+	matrix_pack *mat_pack2 = resize(mat_pack, new_w, new_y);
+	mat_pack_free(mat_pack);
+	return mat_pack2;
+}
+
 matrix_pack *modify_image(matrix_pack *mat_pack, matrix *convo, int mode) 
 {
 	//Mode filter
@@ -124,17 +132,7 @@ matrix_pack *modify_image(matrix_pack *mat_pack, matrix *convo, int mode)
 		return mat_pack;
 	}
 
-	//Mode resize
-	if (mode == 2) 
-	{
-		size_t new_w = 768;
-		size_t new_y = 145;
-		matrix_pack *mat_pack2 = resize(mat_pack, new_w, new_y);
-		mat_pack_free(mat_pack);
-		return mat_pack2;
-	}
-
-	//Mode rotate
+        //Mode rotate
 	if (mode == 3) 
 	{
 		matrix_pack *mat_pack2 = rotation(mat_pack, 45);

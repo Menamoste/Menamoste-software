@@ -25,6 +25,9 @@ void load_rects(SDL_Renderer *renderer, SDL_Rect *rects);
 void cleanResources(SDL_Window *window, SDL_Renderer *renderer, 
 SDL_Texture *texture);
 
+//Resize the image.
+matrix_pack *resize_image(matrix_pack *mat_pack, int new_w, int new_y);
+
 //Modify the image according to the mode chosen.
 matrix_pack *modify_image(matrix_pack *mat_pack, matrix *convo, int mode);
 

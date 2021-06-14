@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <err.h>
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "gui.h"
 #include "tools.h"
@@ -181,7 +182,7 @@ int main()
 				if (SDL_PointInRect(&mouse_pos,
 									&rects[0]))
 				{
-					is_pencil++;
+					is_pencil = 1;
 				}
 				//Filter
 				if (SDL_PointInRect(&mouse_pos,
@@ -211,10 +212,11 @@ int main()
 
 						char *arg1 = text_box(renderer, arg1_rect);
 						char *arg2 = text_box(renderer, arg2_rect);
-						printf("%s and %s\n", arg1, arg2);
+                                                int new_h = atoi(arg1);
+                                                int new_w = atoi(arg2);
 
-						matrix_pack *mat_pack2 = modify_image(mat_pack, 
-						convo, 2);
+						matrix_pack *mat_pack2 = 
+                                                resize_image(mat_pack, new_w, new_h);
 
 						SDL_Color color[1];
 						set_color(color, 0, 100, 100, 100, 0);
