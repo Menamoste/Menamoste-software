@@ -6,6 +6,7 @@
 #include "tools.h"
 #include "color.h"
 #include "path.h"
+#include "selection.h"
 
 #define PATH_MAX_LENGTH 35
 
@@ -163,13 +164,16 @@ int main()
 
 	char opened = 1;
 	char is_resized = 0;
-	char is_pencil = 1;
+	char is_pencil = 0;
+	char is_selection = 0;
+	size_t is_selected = 0;
 	int mouse_x = 0;
 	int mouse_y = 0;
 	SDL_Event events;
 	//Color of the pencil
 	triplet trip = {1.0f, 0.0f, 0.0f};
-
+	// Coordonnees
+	size_t x1, y1, x2, y2; 
 	while (opened)
 	{
 		while (SDL_PollEvent(&events))
@@ -206,6 +210,12 @@ int main()
 									mat_pack2);
 						is_pencil = 0;
 					}
+				}
+				//Selection
+				if (SDL_PointInRect(&mouse_pos,
+									&rects[5]))
+				{
+					is_selection = 1;
 				}
 				//Resize
 				if (SDL_PointInRect(&mouse_pos,
@@ -272,6 +282,23 @@ int main()
 									image_rect, image_surface,
 									mat_pack);
 					}
+
+					if (is_selection)
+					{
+						x1 = 0;
+						y1 = 0;
+
+						SDL_GetGlobalMouseState(&mouse_x, 
+						&mouse_y);
+						while ((!x1 && !y1))
+						{
+							if (SDL_MOUSEBUTTONDOWN)
+							{
+									x1 = mouse_x - window_width/3;
+									y1 = mouse_y - window_height/4;
+							}
+						}
+					}
 				}
 				//Color red
 				if (SDL_PointInRect(&mouse_pos,
@@ -328,7 +355,53 @@ int main()
 					color_to_trip(colors[8], &trip);
 				}
 				break;
+			
+			case SDL_MOUSEBUTTONUP:
+					SDL_GetGlobalMouseState(&mouse_x, 
+					&mouse_y);
+					//Image
+					if (SDL_PointInRect(&mouse_pos, 
+						image_rect)) {                        
+						if (is_selection)
+						{
+							x2 = 0;
+							y2 = 0;
+							while ((!x2 && !y2))
+							{	
+								if (SDL_MOUSEBUTTONUP)
+								{
+									x2 = mouse_x - window_width/3;
+									y2 = mouse_y - window_height/4;
+									
+									SDL_Color color[1];
+									set_color(color, 0, 
+																	100, 100, 100, 0);
+
+									draw_rect(renderer, 
+																		*image_rect, 
+																		color[0]);
+									matrix_pack* mat_pack2 = select(mat_pack, x1, y1, x2, y2, &is_selected);
+
+									image_surface =
+									SDL_CreateRGBSurface(0,
+																mat_pack2->r->cols,
+																mat_pack2->r->rows,
+																32, 0, 0, 0, 0);
+
+									print_image(renderer,
+												image_rect,
+												image_surface,
+												mat_pack2);
+
+									is_pencil = 0;
+									is_selection = 0;
+								}
+							}
+						}						
+					}
+				break;
 			}
+
 		}
 	}
 	cleanResources(window, renderer, NULL);
