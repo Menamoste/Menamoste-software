@@ -11,15 +11,37 @@ void clean_init()
 
 void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar)
 {
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &bar);
 	SDL_RenderPresent(renderer);
+}
+
+void print_message(char *text, SDL_Renderer *renderer, SDL_Rect bar, int error)
+{
+    //Load the font
+    char *font_path = "../res/Fonts/arial.ttf";
+    TTF_Font *font = TTF_OpenFont(font_path, 40);
+    SDL_Color color = {0, 255, 0, 255};
+    if (error)
+    {
+        color.g = 0;
+        color.r = 255;
+    }
+    if (text[0] != 0)
+    {
+        SDL_Surface *text_surface = TTF_RenderText_Blended(font, text, color);
+	SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer,
+	text_surface);
+	SDL_FreeSurface(text_surface);
+	SDL_QueryTexture(text_texture, NULL, NULL, &bar.w, &bar.h);
+	SDL_RenderCopy(renderer, text_texture, NULL, &bar);
+	SDL_RenderPresent(renderer);
+    }
 }
 
 void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font, 
 SDL_Rect bar)
 {	
-	SDL_Rect text_rect = bar;
+    SDL_Rect text_rect = bar;
     if (text[0] != 0)
     {
 		SDL_Color color = {0, 0, 0, 255};

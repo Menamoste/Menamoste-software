@@ -98,6 +98,7 @@ int main()
 		cleanResources(NULL, NULL, NULL);
 		return -1;
 	}
+
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
 												SDL_RENDERER_SOFTWARE);
 	if (!renderer)
@@ -130,17 +131,23 @@ int main()
 	SDL_RenderPresent(renderer);
 
         //Input image
-	SDL_Rect path_rect = {0, 10, 1000, 60};
-	char *path = text_box(renderer, path_rect);
-
-	//Get the image's surface.
-	SDL_Surface *image_surface = SDL_LoadBMP(path);
-	if (!image_surface)
+	SDL_Rect path_rect = {0, 20, 1000, 60};
+	SDL_Surface *image_surface = NULL;
+        SDL_Rect bar = {1100, 10, 800, 60};
+        char text[] = "Impossible de charger l'image";
+	while (!image_surface)
 	{
-		SDL_Log("Erreur : %s\n", SDL_GetError());
-		cleanResources(window, renderer, NULL);
-		return -1;
+	    //Get the image's surface.
+	    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	    char *path = text_box(renderer, path_rect);
+	    image_surface = SDL_LoadBMP(path);
+            free(path);
+            print_message(text, renderer, bar, 1);
 	}
+
+	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+        fill_text_box(renderer, bar);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 	//Get the matrix
 	matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
