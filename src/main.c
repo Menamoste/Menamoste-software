@@ -76,8 +76,6 @@ int main()
 
 	//Program
 
-	char path[PATH_MAX_LENGTH] = "../res/Images/Lenna.bmp";
-
 	//Initialisation
 	if (SDL_Init(SDL_INIT_VIDEO) == -1)
 	{
@@ -130,6 +128,10 @@ int main()
 	//Print the result on the renderer.
 	SDL_RenderPresent(renderer);
 
+        //Input image
+	SDL_Rect path_rect = {0, 10, 1000, 60};
+	char *path = text_box(renderer, path_rect);
+
 	//Get the image's surface.
 	SDL_Surface *image_surface = SDL_LoadBMP(path);
 	if (!image_surface)
@@ -149,11 +151,6 @@ int main()
 	//Print the image.
 	print_image(renderer, image_rect, image_surface, mat_pack);
 
-	SDL_Rect path_rect = {0, 10, 1000, 60};
-
-	char *path9 = text_box(renderer, path_rect);
-	printf("%s\n", path9);
-	
 	//Event Management
 
 	char opened = 1;
@@ -208,8 +205,8 @@ int main()
 				{
 					if (is_resized == 0)
 					{
-						SDL_Rect arg1_rect = {1700, 400, 70, 50};	
-						SDL_Rect arg2_rect = {1700, 600, 70, 50};
+						SDL_Rect arg1_rect = {1700, 400, 130, 50};	
+						SDL_Rect arg2_rect = {1700, 600, 130, 50};
                                                 fill_text_box(renderer, arg2_rect);
 
 						char *arg1 = text_box(renderer, arg1_rect);
