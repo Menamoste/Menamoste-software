@@ -131,23 +131,28 @@ int main()
 	//Print the result on the renderer.
 	SDL_RenderPresent(renderer);
 
-        //Input image
+    //Input image
 	SDL_Rect path_rect = {0, 20, 1000, 60};
 	SDL_Surface *image_surface = NULL;
-        SDL_Rect bar = {1100, 10, 800, 60};
-        char text[] = "Impossible de charger l'image";
+    SDL_Rect bar = {1100, 10, 800, 60};
+    char text[] = "Impossible de charger l'image";
+	char text2[] = "L'image a bien pu etre chargée";
 	while (!image_surface)
 	{
 	    //Get the image's surface.
 	    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	    char *path = text_box(renderer, path_rect);
 	    image_surface = SDL_LoadBMP(path);
-            free(path);
-            print_message(text, renderer, bar, 1);
+        free(path);
+		if (!image_surface)
+        	print_message(text, renderer, bar, 1);
 	}
 
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-        fill_text_box(renderer, bar);
+    fill_text_box(renderer, bar);
+    print_message(text2, renderer, bar, 0);
+	SDL_Delay(2000);
+    fill_text_box(renderer, bar);
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 	//Get the matrix
@@ -172,8 +177,11 @@ int main()
 	SDL_Event events;
 	//Color of the pencil
 	triplet trip = {1.0f, 0.0f, 0.0f};
-	// Coordonnees
-	size_t x1, y1, x2, y2; 
+	//Coordinates
+	size_t x1 = 0;
+	size_t y1 = 0;
+	size_t x2 = 0;
+	size_t y2 = 0; 
 	while (opened)
 	{
 		while (SDL_PollEvent(&events))
