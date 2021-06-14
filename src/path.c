@@ -61,12 +61,16 @@ char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar)
 	SDL_Event event;
 	//Fill the text with null characters.
 	memset(text, 0, len_max);
+        char new_input = 0;
 	while (running)
 	{
-		while (SDL_PollEvent(&event))
+		if (SDL_PollEvent(&event))
 		{
-			if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_RETURN)
-				running = 0;	
+			if (event.type == SDL_QUIT || (event.key.keysym.sym == SDLK_RETURN
+                                && new_input))
+                        {
+                            running = 0;
+                        }
 			else
 			{
 				//If delete key is pressed.
@@ -103,6 +107,7 @@ char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar)
 					print_text(text, renderer, font, bar);
 				}
 			}
+                        new_input = event.key.keysym.sym != SDLK_RETURN;
 		}
 	}
 	return text;

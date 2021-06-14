@@ -208,8 +208,10 @@ int main()
 				{
 					if (is_resized == 0)
 					{
-						SDL_Rect arg1_rect = {700, 700, 70, 50};	
-						SDL_Rect arg2_rect = {700, 900, 70, 50};	
+						SDL_Rect arg1_rect = {1700, 400, 70, 50};	
+						SDL_Rect arg2_rect = {1700, 600, 70, 50};
+                                                fill_text_box(renderer, arg2_rect);
+
 						char *arg1 = text_box(renderer, arg1_rect);
 						char *arg2 = text_box(renderer, arg2_rect);
 						printf("%s and %s\n", arg1, arg2);
