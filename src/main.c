@@ -136,24 +136,17 @@ int main()
 	SDL_Surface *image_surface = NULL;
     SDL_Rect bar = {1100, 10, 800, 60};
     char text[] = "Impossible de charger l'image";
-	char text2[] = "L'image a bien pu etre chargée";
+	char text2[] = "L'image a bien pu etre chargee";
 	while (!image_surface)
 	{
 	    //Get the image's surface.
 	    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	    char *path = text_box(renderer, path_rect);
+	    char *path = text_box(renderer, path_rect, 100);
 	    image_surface = SDL_LoadBMP(path);
-        free(path);
-		if (!image_surface)
+            free(path);
+	    if (!image_surface)
         	print_message(text, renderer, bar, 1);
 	}
-
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-    fill_text_box(renderer, bar);
-    print_message(text2, renderer, bar, 0);
-	SDL_Delay(2000);
-    fill_text_box(renderer, bar);
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 	//Get the matrix
 	matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
@@ -164,6 +157,14 @@ int main()
 
 	//Print the image.
 	print_image(renderer, image_rect, image_surface, mat_pack);
+
+        //Print Successful message.
+        print_message(text2, renderer, bar, 0);
+	SDL_Delay(2000);
+	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+        fill_text_box(renderer, bar);
+        fill_text_box(renderer, bar);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 	//Event Management
 
@@ -231,12 +232,12 @@ int main()
 				{
 					if (is_resized == 0)
 					{
-						SDL_Rect arg1_rect = {1700, 400, 130, 50};	
-						SDL_Rect arg2_rect = {1700, 600, 130, 50};
+						SDL_Rect arg1_rect = {1700, 400, 200, 50};	
+						SDL_Rect arg2_rect = {1700, 600, 200, 50};
                                                 fill_text_box(renderer, arg2_rect);
 
-						char *arg1 = text_box(renderer, arg1_rect);
-						char *arg2 = text_box(renderer, arg2_rect);
+						char *arg1 = text_box(renderer, arg1_rect, 5);
+						char *arg2 = text_box(renderer, arg2_rect, 5);
                                                 int new_h = atoi(arg1);
                                                 int new_w = atoi(arg2);
 

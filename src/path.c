@@ -38,9 +38,9 @@ void print_message(char *text, SDL_Renderer *renderer, SDL_Rect bar, int error)
     }
 }
 
-void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font, 
+void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font,
 SDL_Rect bar)
-{	
+{
     SDL_Rect text_rect = bar;
     if (text[0] != 0)
     {
@@ -64,14 +64,12 @@ SDL_Rect bar)
 		fill_text_box(renderer, bar);
 }
 
-char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar)
+char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar, size_t len_max)
 {
 	//Load the font
-	char *font_path = "../res/Fonts/arial.ttf";	
-   	TTF_Font *font = TTF_OpenFont(font_path, 50);
+	char *font_path = "../res/Fonts/arial.ttf"; 
+	TTF_Font *font = TTF_OpenFont(font_path, 50);
 	//Limit of the length of the text.
-	size_t len_max = 100;
-	//Current length of the text.
 	size_t len = 0;
 	//Boolean to stop the loop.
 	char running = 1;
@@ -135,8 +133,8 @@ char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar)
 	return text;
 }
 
-char *text_box(SDL_Renderer *renderer, SDL_Rect bar)
+char *text_box(SDL_Renderer *renderer, SDL_Rect bar, size_t len_max)
 {
 	fill_text_box(renderer, bar);
-	return text_handeling(renderer, bar);
+	return text_handeling(renderer, bar, len_max);
 }
