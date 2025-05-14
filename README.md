@@ -1,5 +1,5 @@
 # Menamoste Image Editor
-An low level image Editor using only the SDL2 made by Melinda Marmot, Nandi Traore, Moad Doghmi and Steve Suissa (project leader).
+An low level image Editor using only the SDL2.
 
 ![Interface](result.png)
 ## Usage
