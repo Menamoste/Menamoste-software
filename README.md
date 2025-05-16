@@ -1,5 +1,5 @@
 # Menamoste Image Editor
-An low level image Editor using only the SDL2.
+An simple, low level image editor using only the SDL2.
 
 ![Interface](result.png)
 ## Usage
