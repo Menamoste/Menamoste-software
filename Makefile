@@ -7,9 +7,21 @@ OBJ = $(subst $(DIR_SRC),$(DIR_OBJ), $(SRC:.c=.o))
 DEP = $(OBJ:.o=.d)
 
 CC = gcc
-CPPFLAGS = -MMD
-CFLAGS = -g -Wall -Wextra -std=c99 
-LDLIBS = -lm -lSDL2 -lSDL2_ttf
+CFLAGS = -g -Wall -Wextra -std=c99
+LDLIBS = -lm -lSDL2main -lSDL2 -lSDL2_ttf
+
+# Platform-specific settings
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	CPPFLAGS = -MMD
+	LDFLAGS =
+else ifneq (,$(findstring MINGW,$(UNAME_S)))
+	CPPFLAGS = -MMD -IC:\Users\S064015\scoop\apps\sdl2\current\include -IC:\Users\S064015\scoop\apps\sdl2\current\include\SDL2 -IC:\Users\S064015\scoop\apps\sdl2-ttf\current\include
+	LDFLAGS = -LC:\Users\S064015\scoop\apps\sdl2\current\lib -LC:\Users\S064015\scoop\apps\sdl2-ttf\current\lib -Wl,--subsystem,windows
+else
+	CPPFLAGS = -MMD
+	LDFLAGS =
+endif
 
 all: dirs $(BIN)
 
@@ -19,7 +31,7 @@ run: all
 	./$(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<

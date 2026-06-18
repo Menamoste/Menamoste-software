@@ -1,4 +1,5 @@
 #include "tools.h"
+#include <math.h>
 
 void set_pixel(SDL_Surface *sur, int x, int y, Uint32 pixel)
 {

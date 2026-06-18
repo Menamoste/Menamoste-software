@@ -2,7 +2,7 @@
 #define TTF_H
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "sdl2_ttf_compat.h"
 
 // Text structure containing text's string, rect, texture, font, color and positions
 typedef struct

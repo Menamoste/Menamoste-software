@@ -11,6 +11,7 @@ void clean_init()
 
 void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar)
 {
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &bar);
 	SDL_RenderPresent(renderer);
 }
@@ -18,8 +19,12 @@ void fill_text_box(SDL_Renderer *renderer, SDL_Rect bar)
 void print_message(char *text, SDL_Renderer *renderer, SDL_Rect bar, int error)
 {
     //Load the font
-    char *font_path = "../res/Fonts/arial.ttf";
+    char *font_path = "res/Fonts/arial.ttf";
     TTF_Font *font = TTF_OpenFont(font_path, 40);
+    if (!font) {
+        fprintf(stderr, "Warning: Could not load font %s: %s\n", font_path, TTF_GetError());
+        return;
+    }
     SDL_Color color = {0, 255, 0, 255};
     if (error)
     {
@@ -36,39 +41,50 @@ void print_message(char *text, SDL_Renderer *renderer, SDL_Rect bar, int error)
 	SDL_RenderCopy(renderer, text_texture, NULL, &bar);
 	SDL_RenderPresent(renderer);
     }
+    TTF_CloseFont(font);
 }
 
 void print_text(char *text, SDL_Renderer *renderer, TTF_Font *font,
 SDL_Rect bar)
 {
     SDL_Rect text_rect = bar;
+
+	//Fill background first
+	fill_text_box(renderer, bar);
+
     if (text[0] != 0)
     {
 		SDL_Color color = {0, 0, 0, 255};
         SDL_Surface *text_surface = TTF_RenderText_Blended(font, text, color);
+		if (!text_surface) return;
+
 		if (text_surface->w > bar.w)
 		{
-			text_rect.x = text_surface->w - bar.w;
+			text_rect.x = bar.x;
+		} else {
+			text_rect.x = bar.x;
 		}
-		SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, 
-		text_surface);
+
+		SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
 		SDL_FreeSurface(text_surface);
 
-		fill_text_box(renderer, bar);
-
-		SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
-		SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
-		SDL_RenderPresent(renderer);
+		if (text_texture) {
+			SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
+			SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
+			SDL_DestroyTexture(text_texture);
+		}
     }
-	else
-		fill_text_box(renderer, bar);
 }
 
 char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar, size_t len_max)
 {
 	//Load the font
-	char *font_path = "../res/Fonts/arial.ttf"; 
+	char *font_path = "res/Fonts/arial.ttf";
 	TTF_Font *font = TTF_OpenFont(font_path, 50);
+	if (!font) {
+		fprintf(stderr, "Warning: Could not load font %s: %s\n", font_path, TTF_GetError());
+		return NULL;
+	}
 	//Limit of the length of the text.
 	size_t len = 0;
 	//Boolean to stop the loop.
@@ -97,11 +113,12 @@ char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar, size_t len_max)
 				if (event.key.keysym.sym == SDLK_BACKSPACE)
 				{
 					if (backspace_pressed == 1)
-					{	
+					{
 						if (len != 0)
 							len--;
 						text[len] = '\0';
 						print_text(text, renderer, font, bar);
+						SDL_RenderPresent(renderer);
 						backspace_pressed = 0;
 					}
 					else
@@ -125,11 +142,13 @@ char *text_handeling(SDL_Renderer *renderer, SDL_Rect bar, size_t len_max)
 					len += len_to_copy;
 
 					print_text(text, renderer, font, bar);
+					SDL_RenderPresent(renderer);
 				}
 			}
                         new_input = event.key.keysym.sym != SDLK_RETURN;
 		}
 	}
+	TTF_CloseFont(font);
 	return text;
 }
 

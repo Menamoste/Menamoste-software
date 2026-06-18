@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "matrix.h"
 #include "selection.h"
-#include <err.h>
+#include "err_compat.h"
 #include <stdlib.h>
 
 void swap(size_t *a, size_t *b)

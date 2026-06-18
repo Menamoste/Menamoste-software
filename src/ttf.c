@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <err.h>
+#include "sdl2_ttf_compat.h"
+#include "err_compat.h"
 #include "gui.h"
 #include <ctype.h>
 

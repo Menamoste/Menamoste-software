@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <err.h>
+#include "err_compat.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "gui.h"
@@ -15,7 +15,7 @@ const size_t window0_width = 600;
 const size_t window0_height = 200;
 const size_t window_width = 1920;
 const size_t window_height = 1080;
-const size_t icon_size = 64;
+const size_t icon_size = 96;
 const size_t nb_rects = 18;
 const size_t nb_colors = 9;
 const size_t nb_icons = 8;
@@ -37,8 +37,10 @@ void color_to_trip(SDL_Color color, triplet *trip)
 	trip->g = g_val;
 	trip->b = b_val;
 }
-int main()
+int main(int argc, char *argv[])
 {
+	(void)argc;
+	(void)argv;
 	//Data
 	//Set colors
 	set_color(colors, 0, 255, 0, 0, 255);
@@ -109,8 +111,8 @@ int main()
 		return -1;
 	}
 
-	//BG
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0);
+	//BG - dark gray background
+	SDL_SetRenderDrawColor(renderer, 60, 62, 68, 255);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
@@ -121,15 +123,41 @@ int main()
 	//Icons management
 	place_rects(rects);
 
-	//Draw the color icons
-	for (size_t i = nb_icons; i < nb_rects - 1; i++)
-		draw_rect(renderer, rects[i], colors[i - nb_icons]);
+	//Load icon variants (normal and select)
+	load_icon_variants(renderer);
 
-	//Then the icons.
-	load_rects(renderer, rects);
+	//Clear background
+	SDL_SetRenderDrawColor(renderer, 60, 62, 68, 255);
+	SDL_RenderClear(renderer);
+
+	//Draw toolbar background
+	draw_toolbar_bg(renderer);
+
+	//Draw ribbon
+	draw_top_ribbon(renderer, "Lenna.bmp");
+
+	//Draw tabs
+	draw_image_tabs(renderer);
+
+	//Render the icons
+	for (size_t i = 0; i < nb_icons; i++) {
+		printf("Rendering icon %zu at (%d, %d)\n", i, rects[i].x, rects[i].y);
+		render_icon_variant(renderer, rects[i], i, 0);
+		draw_button_border(renderer, rects[i]);
+	}
+
+	//Draw tool labels below icons
+	draw_tool_labels(renderer, rects);
+
+	//Draw status bar
+	draw_status_bar(renderer, 0, 0, 100);
 
 	//Print the result on the renderer.
 	SDL_RenderPresent(renderer);
+
+	//UI State variables (needed for image loading and event loop)
+	int active_tool = -1;
+	int active_color_idx = 0;
 
     //Input image
 	SDL_Rect path_rect = {0, 20, 1000, 60};
@@ -137,34 +165,49 @@ int main()
     SDL_Rect bar = {1100, 10, 800, 60};
     char text[] = "Impossible de charger l'image";
 	char text2[] = "L'image a bien pu etre chargee";
-	while (!image_surface)
-	{
-	    //Get the image's surface.
-	    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	    char *path = text_box(renderer, path_rect, 100);
-	    image_surface = SDL_LoadBMP(path);
-            free(path);
-	    if (!image_surface)
-        	print_message(text, renderer, bar, 1);
+
+	//Load default image (Lenna.bmp)
+	image_surface = SDL_LoadBMP("res/Images/Lenna.bmp");
+	if (!image_surface) {
+		printf("Error: Could not load default image res/Images/Lenna.bmp: %s\n", SDL_GetError());
+		cleanResources(window, renderer, NULL);
+		return -1;
 	}
 
 	//Get the matrix
 	matrix_pack *mat_pack = sur_to_mat_pack(image_surface);
 
-	//Set the image coordinates.
+	//Set the image coordinates (positioned in upper area of canvas)
 	SDL_Rect *image_rect = &rects[nb_rects - 1];
-	set_rect(image_rect, window_width / 3, window_height / 4, 0, 0);
+	int canvas_height = window_height - 35 - 330;  // Status bar height = 35, toolbar = 330
+	int image_y = 330 + (canvas_height / 6);  // Position in upper portion of canvas
+	set_rect(image_rect, window_width / 3, image_y, 0, 0);
 
-	//Print the image.
+	//Draw background and UI frame
+	SDL_SetRenderDrawColor(renderer, 60, 62, 68, 255);
+	SDL_RenderClear(renderer);
+	draw_ui_frame(renderer, "Lenna.bmp", image_surface->w, image_surface->h, 100);
+
+	//Re-render icons and borders on top of UI frame
+	for (size_t i = 0; i < nb_icons; i++) {
+		printf("Initial render icon %zu\n", i);
+		render_icon_variant(renderer, rects[i], i, 0);
+		draw_button_border(renderer, rects[i]);
+	}
+
+	//Draw tool labels
+	draw_tool_labels(renderer, rects);
+
+	//Also render color swatches
+	printf("Rendering color palette\n");
+	draw_color_palette(renderer, rects, colors, active_color_idx);
+
+	//Then draw the image on top
 	print_image(renderer, image_rect, image_surface, mat_pack);
+	draw_canvas_border(renderer, *image_rect);
+	SDL_RenderPresent(renderer);
 
-        //Print Successful message.
-        print_message(text2, renderer, bar, 0);
-	SDL_Delay(2000);
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-        fill_text_box(renderer, bar);
-        fill_text_box(renderer, bar);
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	printf("Image loaded successfully. Click toolbar buttons to use tools.\n");
 
 	//Event Management
 
@@ -182,7 +225,7 @@ int main()
 	size_t x1 = 0;
 	size_t y1 = 0;
 	size_t x2 = 0;
-	size_t y2 = 0; 
+	size_t y2 = 0;
 	while (opened)
 	{
 		while (SDL_PollEvent(&events))
@@ -202,6 +245,29 @@ int main()
 				if (SDL_PointInRect(&mouse_pos,
 									&rects[0]))
 				{
+					printf("Pencil button clicked (active_tool=%d)\n", active_tool);
+					if (active_tool != 0) {
+						if (active_tool >= 0) {
+							printf("  Deactivating tool %d\n", active_tool);
+							draw_toolbar_bg(renderer);
+							for (size_t i = 0; i < nb_icons; i++) {
+								render_icon_variant(renderer, rects[i], i, (i == 0) ? 1 : 0);
+								if (i == 0) {
+									draw_active_border(renderer, rects[i], 1);
+								} else {
+									draw_button_border(renderer, rects[i]);
+								}
+							}
+							//Clear color palette area when switching tools
+							SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+							SDL_Rect color_area = {window_width - 260, 90, 220, 220};
+							SDL_RenderFillRect(renderer, &color_area);
+						}
+						active_tool = 0;
+						//Show color palette for pencil tool
+						draw_color_palette(renderer, rects, colors, active_color_idx);
+						SDL_RenderPresent(renderer);
+					}
 					is_pencil = 1;
 				}
 				//Filter
@@ -213,17 +279,39 @@ int main()
 						matrix_pack *mat_pack2 =
 							modify_image(mat_pack,
 										 convo, 1);
-						print_image(renderer,
-									image_rect,
-									image_surface,
-									mat_pack2);
-						is_pencil = 0;
+					SDL_SetRenderDrawColor(renderer, 60, 62, 68, 255);
+					SDL_RenderClear(renderer);
+					draw_ui_frame(renderer, "Lenna.bmp", image_surface->w, image_surface->h, 100);
+					for (size_t i = 0; i < nb_icons; i++) {
+						render_icon_variant(renderer, rects[i], i, 0);
+						draw_button_border(renderer, rects[i]);
 					}
+					print_image(renderer,
+								image_rect,
+								image_surface,
+								mat_pack2);
+					draw_canvas_border(renderer, *image_rect);
+					SDL_RenderPresent(renderer);
+					is_pencil = 0;
 				}
 				//Selection
 				if (SDL_PointInRect(&mouse_pos,
 									&rects[5]))
 				{
+					if (active_tool != 5) {
+						if (active_tool >= 0) {
+							render_icon_variant(renderer, rects[active_tool], active_tool, 0);
+							draw_button_border(renderer, rects[active_tool]);
+						}
+						render_icon_variant(renderer, rects[5], 5, 1);
+						draw_active_border(renderer, rects[5], 1);
+						//Clear color palette when switching away from pencil
+						SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+						SDL_Rect color_area = {window_width - 260, 90, 220, 220};
+						SDL_RenderFillRect(renderer, &color_area);
+						active_tool = 5;
+						SDL_RenderPresent(renderer);
+					}
 					is_selection = 1;
 				}
 				//Resize
@@ -258,6 +346,9 @@ int main()
 									image_rect,
 									image_surface,
 									mat_pack2);
+						draw_canvas_border(renderer, *image_rect);
+						draw_status_bar(renderer, mat_pack2->r->cols, mat_pack2->r->rows, 100);
+						SDL_RenderPresent(renderer);
 						is_pencil = 0;
 						is_resized++;
 					}
@@ -272,6 +363,8 @@ int main()
 					print_image(renderer,
 								image_rect, image_surface,
 								mat_pack2);
+					draw_canvas_border(renderer, *image_rect);
+					SDL_RenderPresent(renderer);
 					is_pencil = 0;
 				}
 				//Image
@@ -290,6 +383,8 @@ int main()
 						print_image(renderer,
 									image_rect, image_surface,
 									mat_pack);
+						draw_canvas_border(renderer, *image_rect);
+						SDL_RenderPresent(renderer);
 					}
 
 					if (is_selection)
@@ -309,59 +404,19 @@ int main()
 						}
 					}
 				}
-				//Color red
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons]))
-				{
-					color_to_trip(colors[0], &trip);
-				}
-				//Color green
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 1]))
-				{
-					color_to_trip(colors[1], &trip);
-				}
-				//Color dark blue
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 2]))
-				{
-					color_to_trip(colors[2], &trip);
-				}
-				//Color magenta
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 3]))
-				{
-					color_to_trip(colors[3], &trip);
-				}
-				//Color light blue
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 4]))
-				{
-					color_to_trip(colors[4], &trip);
-				}
-				//Color yellow
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 5]))
-				{
-					color_to_trip(colors[5], &trip);
-				}
-				//Color white
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 6]))
-				{
-					color_to_trip(colors[6], &trip);
-				}
-				//Color dark blue
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 7]))
-				{
-					color_to_trip(colors[7], &trip);
-				}
-				//Color black
-				if (SDL_PointInRect(&mouse_pos,
-									&rects[nb_icons + 8]))
-				{
-					color_to_trip(colors[8], &trip);
+				//Color clicks
+				for (size_t i = nb_icons; i < nb_rects - 1; i++) {
+					if (SDL_PointInRect(&mouse_pos, &rects[i])) {
+						color_to_trip(colors[i - nb_icons], &trip);
+						active_color_idx = (int)(i - nb_icons);
+						//Redraw all color swatches to update selection
+						for (size_t j = nb_icons; j < nb_rects - 1; j++) {
+							draw_color_swatch(renderer, rects[j], colors[j - nb_icons],
+											(int)(j - nb_icons) == active_color_idx);
+						}
+						SDL_RenderPresent(renderer);
+						break;
+					}
 				}
 				break;
 			
@@ -401,6 +456,8 @@ int main()
 												image_rect,
 												image_surface,
 												mat_pack2);
+									draw_canvas_border(renderer, *image_rect);
+									SDL_RenderPresent(renderer);
 
 									is_pencil = 0;
 									is_selection = 0;
@@ -412,6 +469,7 @@ int main()
 			}
 
 		}
+	}
 	}
 	cleanResources(window, renderer, NULL);
 	TTF_Quit();

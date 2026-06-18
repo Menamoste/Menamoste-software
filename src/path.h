@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "sdl2_ttf_compat.h"
 
 //Initializes the TTF.
 void clean_init();
