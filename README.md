@@ -2,7 +2,7 @@
 
 A low-level C image editor built with SDL2 featuring a dark-themed UI with real-time visual feedback for tool selection and color swatches.
 
-![Interface](result.png)
+![Interface](UI.png)
 
 ## Features
 
@@ -58,7 +58,6 @@ The res folder contains example images. Try with `res/Images/Lenna.bmp`.
 Menamoste-software/
 ├── README.md              # This file
 ├── Makefile              # Build configuration (supports Linux & Windows)
-├── CLAUDE.md             # Development notes for Claude Code
 │
 ├── src/                  # Source code
 │   ├── main.c            # Application entry point, event loop, tool switching
