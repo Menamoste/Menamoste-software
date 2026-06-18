@@ -3,6 +3,8 @@
 #include "matrix.h"
 #include "resize.h"
 #include "sdl2_ttf_compat.h"
+#include "ui_config.h"
+#include "toolbar.h"
 #include <stdio.h>
 
 extern const size_t window_width;
@@ -65,25 +67,7 @@ void draw_rect(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color color)
 
 void draw_toolbar_bg(SDL_Renderer *renderer)
 {
-	//Fill toolbar background - extends lower to cover buttons and labels, below color palette
-	SDL_Rect toolbar_rect = {0, 0, window_width, 330};
-	SDL_SetRenderDrawColor(renderer, 40, 42, 48, 255);
-	SDL_RenderFillRect(renderer, &toolbar_rect);
-
-	//Draw bottom separator line
-	SDL_SetRenderDrawColor(renderer, 70, 73, 82, 255);
-	SDL_RenderDrawLine(renderer, 0, 329, window_width, 329);
-	SDL_RenderDrawLine(renderer, 0, 330, window_width, 330);
-
-	//Draw vertical separator between tool groups
-	//Buttons at y = 167, height 96, so span 167-263, separator spans 140-320
-	int sep_y_top = 140;
-	int sep_y_bottom = 320;
-
-	//Single separator: Between Bucket (3) and Filter (4), in the middle
-	int sep_x = 120 + 180 * 3 + 96 + (180 - 96) / 2;  // Middle of gap between buttons 3 and 4
-	SDL_RenderDrawLine(renderer, sep_x, sep_y_top, sep_x, sep_y_bottom);
-	SDL_RenderDrawLine(renderer, sep_x + 1, sep_y_top, sep_x + 1, sep_y_bottom);
+	toolbar_render_background(renderer, window_width);
 }
 
 void draw_button_border(SDL_Renderer *renderer, SDL_Rect rect)
@@ -470,39 +454,7 @@ void draw_status_bar(SDL_Renderer *renderer, int img_width, int img_height, int 
 
 void draw_tool_labels(SDL_Renderer *renderer, SDL_Rect *rects)
 {
-	const char *tool_names[] = {
-		"Pencil",
-		"Select",
-		"Eraser",
-		"Bucket",
-		"Filter",
-		"Group",
-		"Resize",
-		"Rotate"
-	};
-
-	TTF_Font *font = TTF_OpenFont("res/Fonts/arial.ttf", 14);
-	if (!font) return;
-
-	SDL_Color text_color = {200, 200, 200, 255};
-
-	for (size_t i = 0; i < nb_icons; i++) {
-		SDL_Surface *text_surf = TTF_RenderText_Blended(font, tool_names[i], text_color);
-		if (text_surf) {
-			SDL_Texture *text_tex = SDL_CreateTextureFromSurface(renderer, text_surf);
-			if (text_tex) {
-				//Position text below the icon, centered
-				int text_x = rects[i].x + (icon_size - text_surf->w) / 2;
-				int text_y = rects[i].y + icon_size + 15;
-				SDL_Rect text_rect = {text_x, text_y, text_surf->w, text_surf->h};
-				SDL_RenderCopy(renderer, text_tex, NULL, &text_rect);
-				SDL_DestroyTexture(text_tex);
-			}
-			SDL_FreeSurface(text_surf);
-		}
-	}
-
-	TTF_CloseFont(font);
+	toolbar_render_tool_labels(renderer, rects, nb_icons);
 }
 
 void draw_ui_frame(SDL_Renderer *renderer, const char *filename, int img_width, int img_height, int zoom_percent)
